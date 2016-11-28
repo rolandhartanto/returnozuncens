@@ -388,7 +388,6 @@ showobj(X) :-
 	write('There are some things here :'),nl,
 	fixObj(L,X),
 	listobj(L),
-	write(L),
 	write('- cancel'), nl,
 	readinputobj,!.
 
@@ -470,8 +469,7 @@ drops(X,rumah) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-	objects(Lo),
-	ismember(X,Lo),
+
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -703,6 +701,31 @@ tag(pemiliktoko) :- write('Shop Owner').
 tag(survivor) :- write('Survivor').
 tag(doctor) :- write('Doctor').
 
+
+%% Fixed Obj Tag %%
+tag(table) :- write('Table').
+tag(bloodyfloor) :- write('Bloody Floor').
+tag(computer) :- write('Computer').
+tag(dirtyfloor) :- write('Dirty Floor').
+tag(refrigerator) :- write('Refrigerator').
+tag(shelf) :- write('Shelf').
+tag(messyfloor) :- write('Messyfloor').
+tag(car) :- write('Car').
+tag(road) :- write('Road').
+tag(monitor) :- write('Monitor').
+tag(undertable) :- write('Under Table').
+tag(slipperyfloor) :- write('Slippery Floor').
+tag(recipes) :- write('recipes').
+tag(drugshelf) :- write('drugshelf').
+tag(cleanfloor) :- write('cleanfloor').
+tag(wideroad) :- write('wideroad').
+tag(smallroad) :- write('smallroad').
+tag(sportstore) :- write('sportstore').
+tag(floor) :- write('floor').
+tag(guncabinets) :- write('guncabinets').
+tag(machine) :- write('machine').
+tag(herbs) :- write('herbs').
+tag(footpath) :- write('footpath').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
