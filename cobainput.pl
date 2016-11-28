@@ -379,9 +379,9 @@ fixObj([herbs,footpath],tamankota).
 
 fixObj([refrigerator,shelf,messyfloor],toko).
 
-fixObj([monitor,table,slipperyfloor],kantorpolisi).
+fixObj([monitor,undertable,slipperyfloor],kantorpolisi).
 
-fixObj([recipes,shelf,cleanfloor],tokoobat).
+fixObj([recipes,drugshelf,cleanfloor],tokoobat).
 
 fixObj([wideroad],jalanraya2).
 
@@ -467,8 +467,6 @@ take(X) :-
 	B is A+1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-	/*objects(Lo),
-	ismember(X,Lo),*/
 	items(L,V,Y),
 	rmember(X,L,L2),
 	%printlist(L2),%
@@ -505,8 +503,7 @@ drops(X,rumah) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-	objects(Lo),
-	ismember(X,Lo),
+	
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -730,3 +727,28 @@ tag(girl) :- write('A Little Girl').
 tag(pemiliktoko) :- write('Shop Owner').
 tag(survivor) :- write('Survivor').
 tag(doctor) :- write('Doctor').
+
+%% Fix obj Tag %%
+tag(table) :- write('table').
+tag(bloodyfloor) :- write('bloodyfloor').
+tag(computer) :- write('computer').
+tag(dirtyfloor) :- write('dirtyfloor').
+tag(refrigerator) :- write('refrigerator').
+tag(shelf) :- write('shelf').
+tag(messyfloor) :- write('messyfloor').
+tag(car) :- write('car').
+tag(road) :- write('road').
+tag(monitor) :- write('monitor').
+tag(undertable) :- write('undertable').
+tag(slipperyfloor) :- write('slipperyfloor').
+tag(recipes) :- write('recipes').
+tag(drugshelf) :- write('drugshelf').
+tag(cleanfloor) :- write('cleanfloor').
+tag(wideroad) :- write('wideroad').
+tag(smallroad) :- write('smallroad').
+tag(sportstore) :- write('sportstore').
+tag(floor) :- write('floor').
+tag(guncabinets) :- write('guncabinets').
+tag(machine) :- write('machine').
+tag(herbs) :- write('herbs').
+tag(footpath) :- write('footpath').
