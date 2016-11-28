@@ -65,16 +65,16 @@ readinputtalk :- % READ INPUT WHEN OPENING INVENTORY %
 readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
 	repeat,
     currloc(Y),
-	write(Y),
+	tag(Y),
 	fixObj(L,Y),
-	write('> '),
+	write(' > '),
     read(Input),
     selectFix(Input,Y,L),
     !.
 
 readinputobjpas(X) :- % READ INPUT TO SELECT OBJECT yg bisa dibawa%
 	repeat,
-    write('> Take from'),write(X),write(' > '),
+    write('> '),tag(X),write(' > '),
     read(Input),
     take(Input),
     !.
@@ -452,6 +452,10 @@ listobjpas([Z|T]) :-
 
 %%%% PASSIVE OBJ CONTROLLER %%%%
 
+take(X) :-
+	inventory(L,
+	assert(
+
 take(cancel) :- !.
 take(X) :-
 	itemcnt(A),
@@ -751,7 +755,7 @@ tag(floor) :- write('Floor').
 tag(guncabinets) :- write('Gun Cabinets').
 tag(machine) :- write('Machine').
 tag(herbs) :- write('Herbs').
-tag(footpath) :- write('Footpath').
+tag(footpath) :- write('Foot Path').
 
 
 %% objek yang bisa diambil tag %%
@@ -780,6 +784,7 @@ tag(lebarancookie) :- write('Khong Guan').
 tag(mangosten) :- write('Mas*in').
 tag(zombiesblood) :- write('Zombie\'s Blood').
 tag(mistletoe) :- write('Mistletoe').
+
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
