@@ -17,10 +17,10 @@ start :-
 	readinputgeneral.
 
 init :-
-	retractall(items(A,B)),								%% Retract all Dynamic Facts
-	retractall(currloc(C)),
-	retractall(itemcnt(D)),
-	retractall(hp(E)),
+	retractall(items(_,_)),								%% Retract all Dynamic Facts
+	retractall(currloc(_)),
+	retractall(itemcnt(_)),
+	retractall(hp(_)),
 	asserta(items([bandage],questitems,inventory)),				%% Initialize facts
 	asserta(items([chocolate,strawberry],consumables,table)),
 	asserta(items([apple],consumables,inventory)),
@@ -28,13 +28,13 @@ init :-
 	asserta(sq1(0)),
 	asserta(currloc(rumah)),
 	asserta(itemcnt(2)),
-	%asserta(itemcnt(0,tools)),%
 	asserta(hp(100)),
+	%asserta(itemcnt(0,tools)),%
 	scene(prologue),
 	nl.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
-	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%% INPUT CONTROLLER %%%%%%%%%
 
 readinputgeneral :- % READ INPUT FOR MAIN MENU %
@@ -45,7 +45,7 @@ readinputgeneral :- % READ INPUT FOR MAIN MENU %
     read(Input),
     menu(Input),
     !.
-	
+
 readinputgeneral :- write('you can only quit now').
 
 readinputinvent :- % READ INPUT WHEN OPENING INVENTORY %
@@ -65,6 +65,7 @@ readinputtalk :- % READ INPUT WHEN OPENING INVENTORY %
 readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
 	repeat,
     currloc(Y),
+	write(Y),
 	fixObj(L,Y),
 	write('> '),
     read(Input),
@@ -73,11 +74,11 @@ readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
 
 readinputobjpas(X) :- % READ INPUT TO SELECT OBJECT yg bisa dibawa%
 	repeat,
-    write('> '),write(X),write(' > '),
+    write('> Take from'),write(X),write(' > '),
     read(Input),
     take(Input),
     !.
-	
+
 readans :- % READ INPUT TO ANSWER SIDE QUEST %
 	repeat,
 	write('> answer > '),
@@ -99,9 +100,9 @@ readinputdrop :- %READ INPUT TO DROP ITEM%
 	currloc(X),
 	drops(Input,X),
 	!.
-	
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %%%%%%%%% GENERAL MENU CONTROLLER %%%%%%%%%
 %% General Actions %%
 menu(inventory) :-
@@ -120,13 +121,13 @@ menu(talk) :-
 	shownpc(X),
 	!,fail.
 
-menu(object) :- 
+menu(object) :-
 	currloc(X),
 	showobj(X),
 	!,fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %%  Move Actions  %%
 menu(n) :- move(n), nl, !, fail.
 menu(s) :- move(s), nl, !, fail.
@@ -137,6 +138,7 @@ menu(quit) :- !.
 menu(describe) :- currloc(X), describe(X), !, fail.
 menu(help) :- help, !, fail.
 menu(y) :- !.
+menu(save) :- !.
 menu(_) :- write('That option is not available'), nl, fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -153,11 +155,11 @@ menuinvent(consumables) :-
     write('You have '),
     inventlist(consumables),
     write('in your consumables items slot'),nl, !, fail.
-	
+
 menuinvent(consume) :-
     write('You have '),
     inventlist(consumables),
-    write('in your consumables items slot'),nl, 
+    write('in your consumables items slot'),nl,
 	readinputconsume,
 	!.
 
@@ -168,7 +170,7 @@ menuinvent(drop) :-
 	write('in your inventory'),nl,
 	readinputdrop,
 	!.
-	
+
 
 menuinvent(cancel) :- !.
 
@@ -248,7 +250,7 @@ move(_) :-
 	write('You can\'t go that way!'),nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %%%%%%%%% NPC CONTROLLER %%%%%%%%%
 %% NPC Location %%
 npc(ghost,nbhouse).
@@ -270,10 +272,10 @@ shownpc(_) :-
 
 listnpc(X) :-
 	npc(Y,X),
-	write('- '), tag(Y), write(' ('), write(X), write(')'), nl.
+	write('- '), tag(Y), write(' ('), write(Y), write(')'), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %% Talk Menu %%
 menutalk(girl) :-
 	currloc(Y),
@@ -289,7 +291,7 @@ menutalk(girl) :-
 	write('Quit?(y)'),nl,
 	write('You can only choose yes hahaha!'),nl,
 	!.
-	
+
 menutalk(X) :-
 	currloc(Y),
 	npc(X,Y),
@@ -333,7 +335,7 @@ dialogue(survivor) :-
 	write('Survivor : He had assigned me to collect the ingredients for the cure. I\'m pretty sure he would really appreciate your help too.'),nl,
 	write('You      : Give me the list of the ingredients and I will see what I can do.'),nl,
 	write('You recieved The Recipe').
-	
+
 dialogue(doctor) :-
 	write('You        : (He must be the doctor who is working on the cure)'),nl,
 	write('You        : Hey! Are you..'),nl,
@@ -344,7 +346,7 @@ dialogue(doctor) :-
 	write('The Doctor : Oh, thank god. Another human.'),nl,
 	write('You        : I bring the ingredient to complete the cure.').
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% SIDE QUEST %%%%%%%%%
 sideQ(b) :-
@@ -360,61 +362,48 @@ sideQ(b) :-
 
 sideQ(cancel) :- !.
 
-sideQ(_) :- 
+sideQ(_) :-
 	write('Hahaha I told you it\'s hard!! Try again!!'),nl,fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %%%%%%%%% OBJECT CONTROLLER %%%%%%%%%
 %%%% ACTIVE OBJECT LOCATION %%%%
 fixObj([table,bloodyfloor],rumah).
-
 fixObj([road],jalan1).
-
 fixObj([computer,dirtyfloor],nbhouse).
-
 fixObj([car,road],jalanraya1).
-
 fixObj([herbs,footpath],tamankota).
-
 fixObj([refrigerator,shelf,messyfloor],toko).
-
-fixObj([monitor,undertable,slipperyfloor],kantorpolisi).
-
-fixObj([recipes,drugshelf,cleanfloor],tokoobat).
-
+fixObj([monitor,table,slipperyfloor],kantorpolisi).
+fixObj([recipes,shelf,cleanfloor],tokoobat).
 fixObj([wideroad],jalanraya2).
-
 fixObj([smallroad],jalanraya3).
-
 fixObj([sportstore,floor],mall).
-
-%fixObj(,rumahsakit).%
-
 fixObj([guncabinets],tokosenjata).
-
 fixObj([machine],lab).
 
 %%%% ACTIVE OBJ LIST %%%%
 showobj(X) :-
-	write('Go to :'),nl,
+	write('There are some things here :'),nl,
 	fixObj(L,X),
 	listobj(L),
 	write('- cancel'), nl,
-	readinputobj.
+	readinputobj,!.
 
-showobj(_) :-
-	write('There\'s nothing here but yourself'),nl.
+showobj(X) :-
+	fixobj([],X),
+	write('There\'s nothing here, it\'s full of nothingness'),nl,!.
 
 listobj([]).
+
 listobj([Y|T]) :-
-	write('- '), tag(X), write(' ('), write(Y), write(')'), nl,
+	write('- '), tag(Y), write(' ('), write(Y), write(')'), nl,
 	listobj(T).
 
 %%%% ACTIVE OBJ CONTROLLER %%%%
-
-selectFix(cancel,Y,L) :- !.
-selectFix(computer,nbhouse,L):-
+selectFix(cancel,_,_) :- !.
+selectFix(computer,nbhouse,_):-
 	write('(/*RULES*/)'),nl,
 	write('append([ ], X, X) :- !.'),nl,
 	write('append([A|S], C, [A|D]) :- append(B, C, D).'),nl,
@@ -423,28 +412,31 @@ selectFix(computer,nbhouse,L):-
 	write('/*(clue : change S to another alphabet :D*/'),nl,
 	readans,
 	!.
-selectFix(X,Y,[]) :-
-	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
-selectFix(X,Y,[X|T]) :-
+selectFix(X,_,[]) :-
+	write('There\'s nothing inside this '),write(X),nl,fail.
+selectFix(X,_,[X|_]) :-
 	%%%dialogue(X) buat keterangan objek%%%
 	%%%tampilin ada objek pasif apa aja di situ%%%
 	showobjpas(X),
 	!,fail.
-	
-selectFix(X,Y,[H|T]) :-
-	%currloc(Y),%
-	%fixObj(X,Y),%
+
+selectFix(X,Y,[_|T]) :-
 	selectFix(X,Y,T).
-	
+
+selectActive(cancel) :- !.
+selectActive(X) :-
+	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
+
+
 %%%% PASSIVE OBJECT LOCATION %%%%
 /* rumah */
-objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,   
+objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,
 		softdrink,bandage,molotov,baseballbat,syringes,mortarAndpestle,
 		bugspray,alcohol,water,lebarancookie,mangosten,zombiesblood,mistletoe]).
 
 %%%% PASSIVE OBJ LIST %%%%
 showobjpas(X) :-
-	write('Take :'),nl,
+	/*write('Take :'),nl,*/
 	items(L2,V,X),
 	listobjpas(L2),
 	write('- Cancel'), nl,
@@ -455,9 +447,9 @@ showobjpas(_) :-
 
 listobjpas([]).
 listobjpas([Z|T]) :-
-	write('- '), write('('), write(Z), write(')'), nl,
+	write('- '), write(tag(Z)),write('('), write(Z), write(')'), nl,
 	listobjpas(T).
-	
+
 %%%% PASSIVE OBJ CONTROLLER %%%%
 
 take(cancel) :- !.
@@ -496,14 +488,14 @@ drops(X,_) :-
 	A =:= 0,
 	write('You don\'t have any item in your inventory!'),nl,
 	!,fail.
-	
+
 drops(X,rumah) :-
 	currloc(rumah),
 	itemcnt(A),
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-	
+
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -511,21 +503,21 @@ drops(X,rumah) :-
 	retract(items(Li,V,bloodyfloor)),
 	asserta(items([X|Li],V,bloodyfloor)), !,
 	fail.
-	
+
 drops(X,jalan1) :-
 	currloc(jalan1),
 	itemcnt(A),
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-	
+
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
 	asserta(items(L2,V,inventory)),
 	retract(items(Li,V,road)),
 	asserta(items([X|Li],V,road)), !,
-	fail.	
+	fail.
 
 drops(X,nbhouse) :-
 	currloc(jalan1),
@@ -533,7 +525,7 @@ drops(X,nbhouse) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-	
+
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -542,27 +534,29 @@ drops(X,nbhouse) :-
 	asserta(items([X|Li],V,dirtyfloor)), !,
 	fail.
 /*lanjutin lagi buat lokasi lainnya di peta*/
-	
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%%% remove list member %%%%	
+%%%% remove list member %%%%
 rmember(X,[],[]).
 rmember(X,[X|T],T).
-rmember(X,[Y|T],[Y|T2]) :- X\==Y. 
+rmember(X,[Y|T],[Y|T2]) :- X\==Y.
 
 %%%% printlist element %%%%
 printlist([]).
 printlist([X]):- write(X),write(' ').
 printlist([X|T]) :-
 	write(X),write(', '),printlist(T).
-	
+
 %%%% ismember% %%%%
 ismember(X,[]):- fail.
 ismember(X,[X|T]).
 ismember(X,[H|T]) :- X\==H, ismember(X,T).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 consumes(cancel):- !.
+
 consumes(X) :-
 	items(L,consumables,inventory),
 	rmember(X,L,L2),
@@ -587,7 +581,8 @@ consumes(X) :-
 	fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
+
 %%%%%%%%% DIALOGUE CONTROLLER %%%%%%%%%
 describe(rumah) :-
 	write('You\'re at your house.'),nl,
@@ -627,7 +622,7 @@ describe(tamankota) :-
 	write('The suburbs is to the north.'),nl,
 	write('The southern main road is to the south.'),nl,
 	write('(ghost) Be careful with your surrounding and don\'t easily trust anyone ....'),nl.
-	
+
 describe(toko) :-
 	write('You are at the convenience store.'),nl,
 	write('No one\'s there.'),nl,
@@ -662,12 +657,12 @@ describe(mall) :-
 	write('You realized there is someone who appeared to be busy searching for something. It seems that he didn\'t realize your presence.'),nl,
 	write('You are unsure whether he is still a human or not.'),nl.
 
-describe(rumahsakit) :- write('Hospital'),nl.
-describe(tokosenjata) :- 
+describe(rumahsakit) :- write('Hospital').
+describe(tokosenjata) :-
 	write('It\'s the gun dealer. The owner is there.'),nl,
-	write('He is alive and kicking. He doesn\'t seem to be bothered by the situation.'),nl.
-	
-describe(lab) :- write('Lab'),nl.
+	write('He is alive and kicking. He doesn\'t seem to be bothered by the situation.').
+
+describe(lab) :- write('Lab').
 
 
 help :-
@@ -680,30 +675,34 @@ help :-
 	write('examine - To examine objects'),nl,
 	write('help - shows this dialogue'),nl,
 	write('quit - quits the game'),nl.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%% STORY %%%%%%%%%
-
+%% Story Tag %%
 scene(prologue) :-
 	write('My breath short and my heart racing. I dared not to look back. I knew they were right behind me.'),nl,
 	write('I was running like it\'s the end of the world, which probably is, keeping my speed and paying no attention'),nl,
 	write('to my wounded foot. It seems that I still got some luck since I was able to reach my house, slammed the gate'),nl,
 	write('and turned on my electric fence. It will keep them off for some time, God knows how long. It\'s getting darker'),nl,
 	write('outside. I fell to floor in my living room, weak and powerless. My whole body was hurting all over and I'),nl,
-	write('realized how painful my wound was. Blood was pooling on the floor, soaked my carpet dark red. It was a miracle'),nl, 
+	write('realized how painful my wound was. Blood was pooling on the floor, soaked my carpet dark red. It was a miracle'),nl,
 	write('that I could be still alive after been infected for some time. '),nl,nl,nl, write('Rise of the Zombie [UNCENSORED]'),nl.
-	
-scene(one) :- 
+
+scene(one) :-
 	write('For now, I should stop the bleeding. I remembered that I have a BANDAGE in my INVENTORY. I should use it.'),nl,
 	write('Type \'inventory.\' to open INVENTORY.'),nl.
-	
+
 scene(two) :-
 	write('I\'m not going to die like those miserable creature. I will cure my infection and survive this ordeal.'),nl,
 	write('So I think I should start looking right away. I will start by investigating my neighborhood.'),nl,nl,
 	write('You opened the door to the outside. A strong, unpleasant smell of burnt flesh filled your nose.'),nl,
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
 	write('the gate and pushed a body of a zombie to clear the way.'),nl.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+
+
+
+%% Line Tag %%
+tag(line) :- write('___________________________________________').
+
 
 %% PLACE TAG %%
 tag(rumah) :- write('House').
@@ -728,33 +727,70 @@ tag(pemiliktoko) :- write('Shop Owner').
 tag(survivor) :- write('Survivor').
 tag(doctor) :- write('Doctor').
 
-%% Fix obj Tag %%
-tag(table) :- write('table').
-tag(bloodyfloor) :- write('bloodyfloor').
-tag(computer) :- write('computer').
-tag(dirtyfloor) :- write('dirtyfloor').
-tag(refrigerator) :- write('refrigerator').
-tag(shelf) :- write('shelf').
-tag(messyfloor) :- write('messyfloor').
-tag(car) :- write('car').
-tag(road) :- write('road').
-tag(monitor) :- write('monitor').
-tag(undertable) :- write('undertable').
-tag(slipperyfloor) :- write('slipperyfloor').
-tag(recipes) :- write('recipes').
-tag(drugshelf) :- write('drugshelf').
-tag(cleanfloor) :- write('cleanfloor').
-tag(wideroad) :- write('wideroad').
-tag(smallroad) :- write('smallroad').
-tag(sportstore) :- write('sportstore').
-tag(floor) :- write('floor').
-tag(guncabinets) :- write('guncabinets').
-tag(machine) :- write('machine').
-tag(herbs) :- write('herbs').
-tag(footpath) :- write('footpath').
+
+%% Fixed Obj Tag %%
+tag(table) :- write('Table').
+tag(bloodyfloor) :- write('Bloody Floor').
+tag(computer) :- write('Computer').
+tag(dirtyfloor) :- write('Dirty Floor').
+tag(refrigerator) :- write('Refrigerator').
+tag(shelf) :- write('Shelf').
+tag(messyfloor) :- write('Messyfloor').
+tag(car) :- write('Car').
+tag(road) :- write('Road').
+tag(monitor) :- write('Monitor').
+tag(undertable) :- write('Under Table').
+tag(slipperyfloor) :- write('Slippery Floor').
+tag(recipes) :- write('Recipes').
+tag(drugshelf) :- write('Drug Shelf').
+tag(cleanfloor) :- write('Clean Floor').
+tag(wideroad) :- write('Wide Road').
+tag(smallroad) :- write('Small Road').
+tag(sportstore) :- write('Sport Store').
+tag(floor) :- write('Floor').
+tag(guncabinets) :- write('Gun Cabinets').
+tag(machine) :- write('Machine').
+tag(herbs) :- write('Herbs').
+tag(footpath) :- write('Footpath').
+
 
 %% objek yang bisa diambil tag %%
+% consumables %
+tag(chocolate) :- write('Chocolate').
+tag(apple) :- write('Apple').
+tag(milk) :- write('Milk').
+tag(painkiller) :- write('Painkiller').
+tag(juice) :- write('Juice').
+tag(cottoncandy) :- write('Cotton Candy').
+tag(coffee) :- write('Coffee').
+tag(tokemasnack) :- write('Tokema Snack').
 
-objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,   
-		softdrink,bandage,molotov,baseballbat,syringes,mortarAndpestle,
-		bugspray,alcohol,water,lebarancookie,mangosten,zombiesblood,mistletoe]).
+% questitems %
+tag(softdrink) :- write('Soft Drink').
+tag(bandage) :- write('Bandage').
+tag(molotov) :- write('Molotov').
+tag(baseballbat) :- write('Baseball Bat').
+tag(syringes) :- write('Syringe').
+tag(mortarAndpestle) :- write('Mortar and Pestle').
+
+tag(bugspray) :- write('Bug Spray (B*ygon)').
+tag(alcohol) :- write('C2H5OH').
+tag(water) :- write('Aquadest').
+tag(lebarancookie) :- write('Khong Guan').
+tag(mangosten) :- write('Mas*in').
+tag(zombiesblood) :- write('Zombie\'s Blood').
+tag(mistletoe) :- write('Mistletoe').
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+initFile(X) :-
+	open(X,write,Pita),
+	write('').
+
+savePos(X) :-
+	open(X,append,Pita),
+	currloc(X),
+	write(Pita,'currloc('),
+	write(Pita,X),write(Pita,').').
+
