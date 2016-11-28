@@ -27,8 +27,8 @@ init :-
 	asserta(itemcnt(0,tools)),
 	asserta(hp(100)).
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
-	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%% INPUT CONTROLLER %%%%%%%%%
 
 readinputgeneral :- % READ INPUT FOR MAIN MENU %
@@ -39,7 +39,7 @@ readinputgeneral :- % READ INPUT FOR MAIN MENU %
     read(Input),
     menu(Input),
     !.
-	
+
 readinputgeneral :- write('you can only quit now').
 
 readinputinvent :- % READ INPUT WHEN OPENING INVENTORY %
@@ -69,7 +69,7 @@ readinputobjpas(X) :- % READ INPUT TO SELECT PASSIVE OBJECT %
     read(Input),
     selectPassive(Input),
     !.
-	
+
 readans :- % READ INPUT TO ANSWER SIDE QUEST %
 	repeat,
 	write('> answer > '),
@@ -78,7 +78,7 @@ readans :- % READ INPUT TO ANSWER SIDE QUEST %
 	!.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %%%%%%%%% GENERAL MENU CONTROLLER %%%%%%%%%
 %% General Actions %%
 menu(inventory) :-
@@ -94,13 +94,13 @@ menu(talk) :-
 	shownpc(X),
 	!,fail.
 
-menu(object) :- 
+menu(object) :-
 	currloc(X),
 	showobj(X),
 	!,fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %%  Move Actions  %%
 menu(n) :- move(n), nl, !, fail.
 menu(s) :- move(s), nl, !, fail.
@@ -206,7 +206,7 @@ move(_) :-
 	write('You can\'t go that way!'),nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %%%%%%%%% NPC CONTROLLER %%%%%%%%%
 %% NPC Location %%
 npc(ghost,nbhouse).
@@ -231,7 +231,7 @@ listnpc(X) :-
 	write('- '), tag(Y), write(' ('), write(X), write(')'), nl.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %% Talk Menu %%
 menutalk(girl) :-
 	currloc(Y),
@@ -247,7 +247,7 @@ menutalk(girl) :-
 	write('Quit?(y)'),nl,
 	write('You can only choose yes hahaha!'),nl,
 	!.
-	
+
 menutalk(X) :-
 	currloc(Y),
 	npc(X,Y),
@@ -291,7 +291,7 @@ dialogue(survivor) :-
 	write('Survivor : He had assigned me to collect the ingredients for the cure. I\'m pretty sure he would really appreciate your help too.'),nl,
 	write('You      : Give me the list of the ingredients and I will see what I can do.'),nl,
 	write('You recieved The Recipe').
-	
+
 dialogue(doctor) :-
 	write('You        : (He must be the doctor who is working on the cure)'),nl,
 	write('You        : Hey! Are you..'),nl,
@@ -302,7 +302,7 @@ dialogue(doctor) :-
 	write('The Doctor : Oh, thank god. Another human.'),nl,
 	write('You        : I bring the ingredient to complete the cure.').
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% SIDE QUEST %%%%%%%%%
 sideQ(b) :-
@@ -312,11 +312,11 @@ sideQ(b) :-
 
 sideQ(cancel) :- !.
 
-sideQ(_) :- 
+sideQ(_) :-
 	write('Hahaha I told you it\'s hard!! Try again!!'),nl,fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-	
+
 %%%%%%%%% OBJECT CONTROLLER %%%%%%%%%
 %%%% ACTIVE OBJECT LOCATION %%%%
 activeObj(table,rumah).
@@ -340,7 +340,7 @@ activeObj(,jalanraya2).
 
 activeObj(,jalanraya3).
 
-activeObj(,mall).	
+activeObj(,mall).
 
 activeObj(,rumahsakit).
 
@@ -385,8 +385,8 @@ selectActive(cancel) :- !.
 selectActive(X) :-
 	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
 
-	
-	
+
+
 %%%% PASSIVE OBJECT LOCATION %%%%
 /* rumah */
 passiveObj(chocolate,table).
@@ -446,7 +446,7 @@ passiveObj(chocolate,table).
 passiveObj(chocolate,table).
 passiveObj(chocolate,table).
 
-mall	
+mall
 passiveObj(chocolate,table).
 passiveObj(chocolate,table).
 passiveObj(chocolate,table).
@@ -503,8 +503,8 @@ selectPassive(cancel) :- !.
 selectPassive(X) :-
 	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
-	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 %%%%%%%%% DIALOGUE CONTROLLER %%%%%%%%%
 describe(rumah) :-
 	write('You\'re at your house.'),nl,
@@ -570,10 +570,10 @@ describe(mall) :-
 	write('You are unsure whether he is still a human or not.'),nl.
 
 describe(rumahsakit) :- write('Hospital').
-describe(tokosenjata) :- 
+describe(tokosenjata) :-
 	write('It\'s the gun dealer. The owner is there.'),nl,
 	write('He is alive and kicking. He doesn\'t seem to be bothered by the situation.').
-	
+
 describe(lab) :- write('Lab').
 
 
@@ -588,7 +588,10 @@ help :-
 	write('help - shows this dialogue'),nl,
 	write('quit - quits the game'),nl.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%	
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%% Line Tag %%
+tag(line) :- write('___________________________________________').
 
 %% PLACE TAG %%
 tag(rumah) :- write('House').
