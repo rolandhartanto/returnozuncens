@@ -65,16 +65,16 @@ readinputtalk :- % READ INPUT WHEN OPENING INVENTORY %
 readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
 	repeat,
     currloc(Y),
-	write(Y),
+	tag(Y),
 	fixObj(L,Y),
-	write('> '),
+	write(' > '),
     read(Input),
     selectFix(Input,Y,L),
     !.
 
 readinputobjpas(X) :- % READ INPUT TO SELECT OBJECT yg bisa dibawa%
 	repeat,
-    write('> Take from'),write(X),write(' > '),
+    write('> '),tag(X),write(' > '),
     read(Input),
     take(Input),
     !.
@@ -452,6 +452,10 @@ listobjpas([Z|T]) :-
 
 %%%% PASSIVE OBJ CONTROLLER %%%%
 
+take(X) :-
+	inventory(L,
+	assert(
+
 take(cancel) :- !.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -715,17 +719,17 @@ tag(road) :- write('Road').
 tag(monitor) :- write('Monitor').
 tag(undertable) :- write('Under Table').
 tag(slipperyfloor) :- write('Slippery Floor').
-tag(recipes) :- write('recipes').
-tag(drugshelf) :- write('drugshelf').
-tag(cleanfloor) :- write('cleanfloor').
-tag(wideroad) :- write('wideroad').
-tag(smallroad) :- write('smallroad').
-tag(sportstore) :- write('sportstore').
-tag(floor) :- write('floor').
-tag(guncabinets) :- write('guncabinets').
-tag(machine) :- write('machine').
-tag(herbs) :- write('herbs').
-tag(footpath) :- write('footpath').
+tag(recipes) :- write('Recipes').
+tag(drugshelf) :- write('Drug Shelf').
+tag(cleanfloor) :- write('Clean Floor').
+tag(wideroad) :- write('Wide Road').
+tag(smallroad) :- write('Small Road').
+tag(sportstore) :- write('Sport Store').
+tag(floor) :- write('Floor').
+tag(guncabinets) :- write('Gun Cabinets').
+tag(machine) :- write('Machine').
+tag(herbs) :- write('Herbs').
+tag(footpath) :- write('Foot Path').
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
