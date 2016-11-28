@@ -752,3 +752,9 @@ tag(guncabinets) :- write('guncabinets').
 tag(machine) :- write('machine').
 tag(herbs) :- write('herbs').
 tag(footpath) :- write('footpath').
+
+%% objek yang bisa diambil tag %%
+
+objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,   
+		softdrink,bandage,molotov,baseballbat,syringes,mortarAndpestle,
+		bugspray,alcohol,water,lebarancookie,mangosten,zombiesblood,mistletoe]).
