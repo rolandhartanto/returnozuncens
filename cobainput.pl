@@ -467,6 +467,8 @@ take(X) :-
 	B is A+1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
+	/*objects(Lo),
+	ismember(X,Lo),*/
 	items(L,V,Y),
 	rmember(X,L,L2),
 	%printlist(L2),%
@@ -503,7 +505,8 @@ drops(X,rumah) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-	
+	objects(Lo),
+	ismember(X,Lo),
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
