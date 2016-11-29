@@ -93,6 +93,7 @@ readinputusequestitem :-
 	use_qi(Input),
 	!.
 */
+/*
 readinputdrop :- %READ INPUT TO DROP ITEM%
 	repeat,
 	write('> Drop > '),
@@ -100,7 +101,7 @@ readinputdrop :- %READ INPUT TO DROP ITEM%
 	currloc(X),
 	drops(Input,X),
 	!.
-
+*/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% GENERAL MENU CONTROLLER %%%%%%%%%
@@ -512,14 +513,13 @@ take(X) :-
 
 %%%% DROP ITEM %%%%
 
-drops(cancel,_) :- !.
-drops(_,_) :-
+drop(X) :-
 	itemcnt(A),
 	A =:= 0,
 	write('You don\'t have any item in your inventory!'),nl,
-	!,fail.
+	!.
 
-drops(X,rumah) :-
+drop(X) :-
 	currloc(rumah),
 	itemcnt(A),
 	B is A-1,
@@ -531,10 +531,9 @@ drops(X,rumah) :-
 	retract(items(L,V,inventory)),
 	asserta(items(L2,V,inventory)),
 	retract(items(Li,V,bloodyfloor)),
-	asserta(items([X|Li],V,bloodyfloor)), !,
-	fail.
+	asserta(items([X|Li],V,bloodyfloor)), !.
 
-drops(X,jalan1) :-
+drop(X) :-
 	currloc(jalan1),
 	itemcnt(A),
 	B is A-1,
@@ -545,10 +544,54 @@ drops(X,jalan1) :-
 	retract(items(L,V,inventory)),
 	asserta(items(L2,V,inventory)),
 	retract(items(Li,V,road)),
-	asserta(items([X|Li],V,road)), !,
-	fail.
+	asserta(items([X|Li],V,road)), !.
 
-drops(X,nbhouse) :-
+drop(X) :-
+	currloc(nbhouse),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+	
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,dirtyfloor)),
+	asserta(items([X|Li],V,dirtyfloor)), !.
+/*
+fixObj([table,bloodyfloor],rumah).
+fixObj([road],jalan1).
+fixObj([computer,dirtyfloor],nbhouse).
+fixObj([car,road],jalanraya1).
+fixObj([herbs,footpath],tamankota).
+fixObj([refrigerator,shelf,messyfloor],toko).
+fixObj([monitor,table,slipperyfloor],kantorpolisi).
+fixObj([recipes,shelf,cleanfloor],tokoobat).
+fixObj([wideroad],jalanraya2).
+fixObj([smallroad],jalanraya3).
+fixObj([sportstore,floor],mall).
+fixObj([guncabinets],tokosenjata).
+fixObj([machine],lab).
+
+*/	
+drop(X) :-
+	currloc(jalan1),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,road)),
+	asserta(items([X|Li],V,road)), !.
+drop(X) :-
+	write('You don\'t have '), write(X), write(' in your inventory!'),nl,!.
+/*
+drops(X) :-
 	currloc(jalan1),
 	itemcnt(A),
 	B is A-1,
@@ -561,7 +604,7 @@ drops(X,nbhouse) :-
 	asserta(items(L2,V,inventory)),
 	retract(items(Li,V,dirtyfloor)),
 	asserta(items([X|Li],V,dirtyfloor)), !,
-	fail.
+	fail.*/
 /*lanjutin lagi buat lokasi lainnya di peta*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -591,7 +634,7 @@ findtype(X,Y) :-
 consumes(cancel):- !.
 
 consumes(X) :-
-	findtype(X,consumable),
+	findtype(X,consumables),
 	find(X,inventory),
 	items(L,consumables,inventory),
 	rmember(X,L,L2),
