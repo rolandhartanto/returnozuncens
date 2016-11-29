@@ -5,7 +5,7 @@
 :- dynamic(hp/1).
 :- dynamic(sq1/1).
 :- dynamic(story/1).
-
+:- dynamic(dead/1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -50,6 +50,7 @@ init :-
 	asserta(items([],consumables,sliperryfloor)),
 	asserta(items([],consumables,aspal)),
 	asserta(sq1(0)),
+	asserta(dead(0)),
 	asserta(story(0)),
 	asserta(currloc(rumah)),
 	asserta(itemcnt(2)),
@@ -134,6 +135,7 @@ readinputdrop :- %READ INPUT TO DROP ITEM%
 %%%%%%%%% GENERAL MENU CONTROLLER %%%%%%%%%
 %% General Actions %%
 menu(inventory) :-
+	dead(0),
 	itemcnt(X),
 	write('amount of items : '),write(X),nl,
 	write('Which item do you want to see ?'),nl,
@@ -145,23 +147,27 @@ menu(inventory) :-
 	readinputinvent, !, fail.
 
 menu(talk) :-
+	dead(0),
 	currloc(X),
 	shownpc(X),
 	!,fail.
 
 menu(look) :-
+	dead(0),
 	currloc(tokosenjata),
 	story(A),
 	A<7,
 	write('I won\'t let you see my gun collection before you give me some softdrinks'),nl,
 	!,fail.
 menu(look) :-
+	dead(0),
 	currloc(tokosenjata),
 	story(A),
 	A>6,
 	showobj(tokosenjata),
 	!,fail.
 menu(look) :-
+	dead(0),
 	currloc(X),
 	showobj(X),
 	!,fail.
@@ -177,18 +183,22 @@ menu(load(X)) :-
 	!,fail.
 
 menu(use(X)) :-
+	dead(0),
 	use(X), !,fail.
 
 menu(take(X)) :-
+	dead(0),
 	take(X), !,fail.
 
 menu(drop(X)) :-
+	dead(0),
 	drop(X), !,fail.
 
 menu(stats) :-
 	stats, !, fail.
 
 menu(sleep):-
+	dead(0),
 	sleep, !,fail.
 
 menu(consume(X)):-
@@ -197,18 +207,22 @@ menu(consume(X)):-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%  Move Actions  %%
-menu(n) :- move(n), nl, !, fail.
-menu(s) :- move(s), nl, !, fail.
-menu(e) :- move(e), nl, !, fail.
-menu(w) :- move(w), nl, !, fail.
+menu(n) :- dead(0),move(n), nl, !, fail.
+menu(s) :- dead(0),move(s), nl, !, fail.
+menu(e) :- dead(0),move(e), nl, !, fail.
+menu(w) :- dead(0),move(w), nl, !, fail.
 
 menu(quit) :- true,!.
-menu(describe) :- currloc(X), describe(X), !, fail.
+menu(describe) :- dead(0),currloc(X), describe(X), !, fail.
 menu(instructions) :- help, !, fail.
-menu(y) :- !.
 menu(save) :- !.
-menu(_) :- write('That option is not available'), nl, fail.
-
+menu(_) :- 
+	dead(0),
+	write('That option is not available'), nl, fail.
+menu(_) :-
+	dead(1),
+	write('You died!'),nl,fail.
+	
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% INVENTORY CONTROLLER %%%%%%%%%
@@ -308,7 +322,10 @@ move(_) :-
 	story(0),
 	write('I should wrap my wound first using the bandage in my inventory!'),nl,!.
 
-
+move(A) :-
+	currloc(lab),
+	write('The door is locked! You can\'t go outside'),nl,
+	!.
 move(A) :-
 	story(Z),
 	Z > 5,
@@ -329,6 +346,7 @@ move(A) :-
 	Z > 0,
 	Z < 6,
 	currloc(jalanraya2),
+	write('The zombies catch you first before you can escape...'),nl,
 	hp(B),
 	C is 0,
 	retract(hp(B)),
@@ -391,6 +409,10 @@ menutalk(girl) :-
 	C is 0,
 	retract(hp(B)),
 	asserta(hp(C)),
+	dead(A),
+	D is 1,
+	retract(dead(A)),
+	asserta(dead(D)),
 	write('HP : '), write(C),nl,
 	write('YOU DIE .... '),nl,
 	write('GAME OVER'),nl,
