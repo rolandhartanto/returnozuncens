@@ -144,6 +144,9 @@ menu(take(X)) :-
 menu(drop(X)) :-
 	drop(X), !,fail.
 
+menu(sleep):-
+	sleep, !,fail.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%  Move Actions  %%
@@ -927,9 +930,14 @@ save(X) :-
 	%% add facts to write here %%
 	close(Pita).
 
-query_all :-
-  catch(
-    forall(query(Q), (Q ->
-        format('yes: ~w~n',[Q]) ;
-        format('no : ~w~n',[Q]))),
-        error(existence_error(procedure, _), _), format('error occurred.~n', [])).
+%% General Actions %%
+sleep :-
+	currloc(rumah),
+	write('You closed your eyes for today, it\'s been a rough day'), nl,
+	hpadd(20); write('You can\'t sleep here, it\'s too dangerous to sleep here'), nl.
+
+hpadd(X) :-
+	hp(Y),
+	retractall(hp),
+	Y+X >= 100 -> asserta(hp(100));
+	asserta(hp(Y+X)).
