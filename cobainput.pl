@@ -160,7 +160,7 @@ menu(look) :-
 	story(A),
 	A>6,
 	showobj(tokosenjata),
-	!,fail.		
+	!,fail.
 menu(look) :-
 	currloc(X),
 	showobj(X),
@@ -330,6 +330,7 @@ move(A) :-
 	C is 0,
 	retract(hp(B)),
 	asserta(hp(C)),
+	scene(flee),
 	write('HP : '), write(C),nl,
 	!.
 move(A) :-
@@ -879,66 +880,54 @@ use(_) :-
 %%%%%%%%% DIALOGUE CONTROLLER %%%%%%%%%
 describe(rumah) :-
 	write('You\'re at your house.'),nl,
-	write('It\'s quite dark here. Luckily it\'s safe here because of your electric fence'),nl,
-	write('The door is to the south'),nl.
+	write('It\'s quite dark here. Luckily it\'s safe here because of your electric fence'),nl,nl,
+	write('The door is to the (s)outh.'),nl.
 
 describe(jalan1) :-
 	story(1),
 	scene(two),nl,
-	write('There\'re a lot of dead zombies here'),nl,
-	write('To the north is your lovely house'),nl,
-	write('To the east is your neighbor\'s house'),nl.
-describe(jalan1) :-
-	write('There\'re a lot of dead zombies here'),nl,
-	write('To the north is your lovely house'),nl,
-	write('To the east is your neighbor\'s house'),nl.
-
-describe(jalan1) :-
-	write('There\'re a lot of dead zombies here'),nl,
-	write('To the north is your lovely house'),nl,
-	write('To the east is your neighbor\'s house'),nl.
+	write('There\'re a lot of dead zombies here.'),nl,nl,
+	write('To the (n)orth is your lovely house.'),nl,
+	write('To the (e)ast is your neighbor\'s house.'),nl
+	write('To the (s)outh is the main road.'),nl.
 
 describe(nbhouse) :-
 	scene(three),
 	write('Your neighbor\'s house look messy.'),nl,
 	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
-	write('The air is reeking of his rotten flesh.'),nl,
-	write('To the west is the exit.'),nl.
-describe(nbhouse) :-
-	write('Your neighbor\'s house look messy.'),nl,
-	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
-	write('The air is reeking of his rotten flesh.'),nl,
-	write('To the west is the exit.'),nl.
-
+	write('The air is reeking of his rotten flesh.'),nl,nl,
+	write('To the (w)est is the exit.'),nl.
 
 describe(jalanraya1) :-
-	write('You are at the main road.'),nl,
-	write('There is a car in the middle of the road. It\'s front is smashed and it\'s window broken.'),nl,
-	write('To the north is the suburbs.'),nl,
-	write('To the south is the City Park.'),nl.
+	write('There is a car in the middle of the road. It\'s front is smashed and it\'s window broken.'),nl,nl,
+	write('To the (n)orth is the suburbs.'),nl,
+	write('To the (s)outh is the City Park.'),nl.
 
 describe(tamankota) :-
 	sq1(0),
 	write('The City Park was green before. Now it is a deserted place.'),nl,
 	write('The only living things are some herbs and flower that once beautifully decorated the park...'),nl,
 	write('...and a little girl sitting on the bench. Her quiet but terrifiying cry sent a chill through your spine.'),nl,
-	write('Maybe I should talk to her.'),nl,
-	write('The suburbs is to the north.'),nl,
-	write('The southern main road is to the south.'),nl,!.
+	write('Maybe I should talk to her.'),nl,nl,
+	write('The suburbs is to the (n)orth.'),nl,
+	write('The police station is to the (w)est.'),nl,
+	write('The convenience store is to the (e)ast.'),nl,
+	write('The southern main road is to the (s)outh.'),nl,!.
 
 describe(tamankota) :-
 	sq1(1),
 	write('The City Park was green before. Now it is a deserted place.'),nl,
 	write('The only living things are some herbs and flower that once beautifully decorated the park...'),nl,
 	write('...and a little girl sitting on the bench. Her quiet but terrifiying cry sent a chill through your spine.'),nl,
-	write('The suburbs is to the north.'),nl,
-	write('The southern main road is to the south.'),nl,
-	write('(ghost) Be careful with your surrounding and don\'t easily trust anyone ....'),nl.
+	write('(ghost) Be careful with your surrounding and don\'t easily trust anyone ....'),nl,nl
+	write('The suburbs is to the (n)orth.'),nl,
+	write('The police station is to the (w)est.'),nl,
+	write('The convenience store is to the (e)ast.'),nl,
+	write('The southern main road is to the (s)outh.'),nl
 
 describe(toko) :-
-	write('You are at the convenience store.'),nl,
-	write('No one\'s there.'),nl,
-	write('The exit is to the west.'),nl.
+	write('No one\'s there. No one would know if you take anything here.'),nl,
+	write('The exit is to the (w)est.'),nl.
 
 describe(kantorpolisi) :-
 	scene(four),
@@ -948,16 +937,17 @@ describe(kantorpolisi) :-
 	write('On the floor were the bodies of dead polices.'),nl,
 	write('On the table were cigarettes, molotov cocktail, and an expensive lighter.'),nl,
 	write('Strangely, there were no gun there. It seems someone had already taken them all.'),nl,
-	write('The exit is to the east.'),nl.
+	write('The exit is to the (e)ast.'),nl.
 
 describe(tokoobat) :-
 	write('You are at the only drugstore in your town.'),nl,
 	write('There are prescription hanging all over the wall.'),nl,
-	write('The drug cabinet was unlocked and filled with tools strange to you.'),nl.
+	write('The drug cabinet was unlocked and filled with tools strange to you.'),nl,nl,
+	write('The exit is to the (w)est'),nl.
 
 describe(jalanraya2) :-
 	story(C),
-	C == 5,
+	C =< 5,
 	write('You arrived at the southern main road.'),nl,
 	write('You saw a person walking towards you. As he was getting closer, you realized it was not a person.'),nl,
 	write('It was a zombie. You were thinking to run away, but the thought vanished when you saw another zombie closing from the direction you came from.'),nl,
@@ -969,18 +959,23 @@ describe(jalanraya2) :-
 describe(jalanraya2) :-
 	story(C),
 	C > 5,
-	write('You could see some of the zombies still burning. The nauseating smell of burnt flesh was filling the air.'),nl.
+	write('You could see some of the zombies still burning. The nauseating smell of burnt flesh was filling the air.'),nl,nl,
+	write('To the (n)orth is the City Park.'),nl,
+	write('To the (e)ast is the drugstore.'),nl,
+	write('To the (w)est is the eastern road.'),nl,
+	write('To the (s)outh is the hospital.'),nl,
 
 describe(jalanraya3) :-
 	write('You are at the eastern road.'),nl,
 	write('You saw a mall to the east and the gun dealer to the south.'),nl,
-	write('The southern main road is to the west.'),nl.
+	write('The southern main road is to the (w)est.'),nl.
 
 describe(mall) :-
 	write('The mall is nothing but a mess.'),nl,
 	write('You suddenly caught a movement. Your heart skipped a beat.'),nl,
 	write('You realized there is someone who appeared to be busy searching for something. It seems that he didn\'t realize your presence.'),nl,
-	write('You are unsure whether he is still a human or not.'),nl.
+	write('You are unsure whether he is still a human or not.'),nl,nl,
+	write('The exit is to the (w)est.'),nl.
 
 describe(rumahsakit) :-
 	write('Dammit! What should I do?'),nl,nl,
@@ -991,7 +986,8 @@ describe(rumahsakit) :-
 
 describe(tokosenjata) :-
 	write('It\'s the gun dealer. The owner is there.'),nl,
-	write('He is alive and kicking. He doesn\'t seem to be bothered by the situation.').
+	write('He is alive and kicking. He doesn\'t seem to be bothered by the situation.'),nl,nl,
+	write('Go (n)orth to go back to the eastern road.'),nl.
 
 describe(lab) :-
 	write('There was someone here.'),nl,nl,
@@ -1061,6 +1057,10 @@ scene(four) :-
 	write('You used the key and you were inside.'),nl,
 	story(X), Y is 5, retract(story(X)), asserta(story(Y)).
 
+scene(flee) :-
+	write('You tried to run from the zombies, but one of the zombie is smart enough to pick a rock and hurl it to you. It hit your head'),nl,
+	write('hard enough to knock you down. You tried hard to stay conscious and crawl away from the zombies. Still, the zombies are too'),nl,
+	write('many. They already surrounded you, bit you all over your body, ate away your flesh. Your cowardice brought you death.'),nl.
 
 
 % Event Tag %
@@ -1082,7 +1082,7 @@ event(softdrink) :-
 	write('Ok, you can take everything you want ...'),nl,
 	write('The guns is in that gun cabinet.'),nl,
 	Y is 7, retractall(story), asserta(story(Y)).
-	
+
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
 
