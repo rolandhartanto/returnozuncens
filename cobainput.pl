@@ -150,6 +150,18 @@ menu(talk) :-
 	!,fail.
 
 menu(look) :-
+	currloc(tokosenjata),
+	story(A),
+	A<7,
+	write('I won\'t let you see my gun collection before you give me some softdrinks'),nl,
+	!,fail.
+menu(look) :-
+	currloc(tokosenjata),
+	story(A),
+	A>6,
+	showobj(tokosenjata),
+	!,fail.		
+menu(look) :-
 	currloc(X),
 	showobj(X),
 	!,fail.
@@ -288,14 +300,42 @@ path(n,lab,rumahsakit).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Movement Controller %%
+
 move(_) :-
 	story(0),
 	write('I should wrap my wound first using the bandage in my inventory!'),nl,!.
 
+
 move(A) :-
 	story(Z),
-	Z =\= 0,
-	Z < 4,
+	Z > 5,
+	currloc(X),
+	path(A,X,Y),
+	retractall(currloc(_)),
+	asserta(currloc(Y)),
+	write('You\'re now at '), tag(Y),nl,
+	describe(Y),nl,
+	hp(B),
+	C is B - 5,
+	retract(hp(B)),
+	asserta(hp(C)),
+	write('HP : '), write(C),nl,
+	!.
+move(A) :-
+	story(Z),
+	Z > 0,
+	Z < 6,
+	currloc(jalanraya2),
+	hp(B),
+	C is 0,
+	retract(hp(B)),
+	asserta(hp(C)),
+	write('HP : '), write(C),nl,
+	!.
+move(A) :-
+	story(Z),
+	Z > 0,
+	Z < 6,
 	currloc(X),
 	path(A,X,Y),
 	retractall(currloc(_)),
@@ -540,7 +580,7 @@ take(X) :-
 	retract(items(L,V,Y)),
 	asserta(items(L2,V,Y)),
 	itemcnt(A),
-	A < 3, %max item (percobaan dulu angkanya nanti ganti lg) di inventory%
+	A < 10, %max item (percobaan dulu angkanya nanti ganti lg) di inventory%
 	B is A+1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
@@ -870,11 +910,6 @@ describe(nbhouse) :-
 	write('The air is reeking of his rotten flesh.'),nl,
 	write('To the west is the exit.'),nl.
 
-describe(nbhouse) :-
-	write('Your neighbor\'s house look messy.'),nl,
-	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
-	write('The air is reeking of his rotten flesh.'),nl,
-	write('To the west is the exit.'),nl.
 
 describe(jalanraya1) :-
 	write('You are at the main road.'),nl,
@@ -1019,6 +1054,18 @@ event(bandage) :-
 	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl,
 	Y is 1, retractall(story(_)), asserta(story(Y)).
 
+event(molotov) :-
+	story(C),
+	write('You killed all the zombie.'),nl,
+	write('You can go now... '),nl,hp(A),write('HP: '),write(A),nl,
+	Y is 6, retractall(story), asserta(story(Y)).
+
+event(softdrink) :-
+	story(C),
+	write('Ok, you can take everything you want ...'),nl,
+	write('The guns is in that gun cabinet.'),nl,
+	Y is 7, retractall(story), asserta(story(Y)).
+	
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
 
