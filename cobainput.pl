@@ -403,6 +403,7 @@ listobj([Y|T]) :-
 
 %%%% ACTIVE OBJ CONTROLLER %%%%
 selectFix(cancel,_,_) :- !.
+
 selectFix(computer,nbhouse,_):-
 	write('(/*RULES*/)'),nl,
 	write('append([ ], X, X) :- !.'),nl,
@@ -412,8 +413,10 @@ selectFix(computer,nbhouse,_):-
 	write('/*(clue : change S to another alphabet :D*/'),nl,
 	readans,
 	!.
+
 selectFix(X,_,[]) :-
-	write('There\'s nothing inside this '),write(X),nl,fail.
+	write('There\'s nothing in there '),nl,fail.
+
 selectFix(X,_,[X|_]) :-
 	%%%dialogue(X) buat keterangan objek%%%
 	%%%tampilin ada objek pasif apa aja di situ%%%
@@ -422,6 +425,11 @@ selectFix(X,_,[X|_]) :-
 
 selectFix(X,Y,[_|T]) :-
 	selectFix(X,Y,T).
+
+listobjpas([]).
+listobjpas([Z|T]) :-
+		write('- '), tag(Z),write('('), write(Z), write(')'), nl,
+		listobjpas(T)
 
 selectActive(cancel) :- !.
 selectActive(X) :-
@@ -435,27 +443,24 @@ objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,
 		bugspray,alcohol,water,lebarancookie,mangosten,zombiesblood,mistletoe]).
 
 %%%% PASSIVE OBJ LIST %%%%
+
 showobjpas(X) :-
-	/*write('Take :'),nl,*/
-	items(L2,V,X),
+	items(L2,V,X),!,
 	listobjpas(L2),
 	write('- Cancel'), nl,
-	readinputobjpas(X),!.
+	readinputobjpas(X).
 
-showobjpas(_) :-
-	write('There\'s nothing here'),nl.
+showobjpas(X) :-
+	write('There\'s no such thing as that'),
+	nl,
+	!.
 
 listobjpas([]).
 listobjpas([Z|T]) :-
-	write('- '), write(tag(Z)),write('('), write(Z), write(')'), nl,
+	write('- '), tag(Z),write('('), write(Z), write(')'), nl,
 	listobjpas(T).
 
 %%%% PASSIVE OBJ CONTROLLER %%%%
-
-take(X) :-
-	inventory(L,
-	assert(
-
 take(cancel) :- !.
 take(X) :-
 	itemcnt(A),
@@ -470,17 +475,17 @@ take(X) :-
 	asserta(items(L2,V,Y)),
 	retract(items(Li,V,inventory)),
 	asserta(items([X|Li],V,inventory)),
-	
+
 	%%%dialogue(X) buat keterangan objek%%%
 	%%%tampilin pilihan buat ambil objek ke tangan atau disimpen balik atau ke inventory%%%
 	!,fail.
-	
+
 take(X) :-
 	itemcnt(A),
 	A =:= 3,
 	write('Your inventory is full'),nl,
 	!,fail.
-	
+
 take(X) :-
 	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -798,4 +803,3 @@ savePos(X) :-
 	currloc(X),
 	write(Pita,'currloc('),
 	write(Pita,X),write(Pita,').').
-
