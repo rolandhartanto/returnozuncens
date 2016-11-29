@@ -529,7 +529,6 @@ drops(X,jalan1) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -927,3 +926,10 @@ save(X) :-
 	saveScene(Pita),
 	%% add facts to write here %%
 	close(Pita).
+
+query_all :-
+  catch(
+    forall(query(Q), (Q ->
+        format('yes: ~w~n',[Q]) ;
+        format('no : ~w~n',[Q]))),
+        error(existence_error(procedure, _), _), format('error occurred.~n', [])).
