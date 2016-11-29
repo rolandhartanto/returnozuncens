@@ -438,7 +438,7 @@ showobj(X) :-
 	readinputobj,!.
 
 showobj(X) :-
-	fixobj([],X),
+	fixObj([],X),
 	write('There\'s nothing here, it\'s full of nothingness'),nl,!.
 
 listobj([]).
@@ -460,7 +460,14 @@ selectFix(computer,nbhouse,_):-
 	!.
 
 selectFix(car,jalanraya1,_):-
-
+	story(C), C < 4,
+	write('You carefully approached the car. You could see a man sitting unconscious on the front seat.'),nl,
+	write('Dried blood covered half of his face. You didn\'t see any sign of infection. You moved closer'),nl,
+	write('to inspect the car.'),nl,nl,
+	write('The man suddenly opened his eyes wide. You felt his hand on your shoulder. Shocked, you punched'),nl,
+	write('the man hard on his face. Then he was dead for real.'),nl,
+	story(X), Y is 4, retract(story(X)), asserta(story(Y)),
+	!.
 
 selectFix(X,_,_) :-
 	items(List,_,X),
@@ -578,7 +585,7 @@ drop(X) :-
 	asserta(items(L2,V,inventory)),
 	retract(items(Li,V,dirtyfloor)),
 	asserta(items([X|Li],V,dirtyfloor)), !.
-	
+
 drop(X) :-
 	currloc(jalanraya1),
 	itemcnt(A),
@@ -870,9 +877,13 @@ describe(toko) :-
 	write('The exit is to the west.'),nl.
 
 describe(kantorpolisi) :-
+	scene(four),
 	write('The police station is no better than other places.'),nl,
 	write('The floor is full of broken glass from the shattered window.'),nl,
 	write('The stench of death and rotten dead bodies filling the air.'),nl,
+	write('On the floor were the bodies of dead polices.'),nl,
+	write('On the table were cigarettes, molotov cocktail, and an expensive lighter.'),nl,
+	write('Strangely, there were no gun there. It seems someone had already taken them all.'),nl,
 	write('The exit is to the east.'),nl.
 
 describe(tokoobat) :-
@@ -958,6 +969,17 @@ scene(three) :-
 	write('light across the room. The light is from a turned on monitor. It is illuminating a familiar figure of your neighbor. Your'),nl,
 	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl,
 	story(X), Y is 3, retract(story(X)), asserta(story(Y)).
+
+scene(four) :-
+	story(C),
+	C =< 4,
+	write('I can\'t face the zombies unarmed. It\'s no different than suicide.'),nl,
+	write('Perhaps I could borrow a gun and some ammo in the here.'),nl,nl,
+	write('You went to the door and rotated the knob. It\'s locked. You are about to give up when you found the key on the floor nearby.'),nl,
+	write('You used the key and you were inside.'),nl,
+	story(X), Y is 5, retract(story(X)), asserta(story(Y)).
+
+
 
 % Event Tag %
 event(bandage) :-
