@@ -24,6 +24,18 @@ init :-
 	asserta(items([chocolate,cottoncandy],consumables,table)),
 	asserta(items([apple],consumables,inventory)),
 	asserta(items([],consumables,bloodyfloor)),
+	asserta(items([],consumables,road)),
+	asserta(items([],consumables,messyfloor)),
+	asserta(items([],consumables,dirtyfloor)),
+	asserta(items([],consumables,wideroad)),
+	asserta(items([],consumables,smallroad)),
+	asserta(items([],consumables,labfloor)),
+	asserta(items([],consumables,carpet)),
+	asserta(items([],consumables,floor)),
+	asserta(items([],consumables,footpath)),
+	asserta(items([],consumables,cleanfloor)),
+	asserta(items([],consumables,sliperryfloor)),
+	asserta(items([],consumables,aspal)),
 	asserta(sq1(0)),
 	asserta(story(0)),
 	asserta(currloc(rumah)),
@@ -66,7 +78,6 @@ readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
 	repeat,
     currloc(Y),
 	tag(Y),
-	fixObj(L,Y),
 	write(' > '),
     read(Input),
     selectFix(Input,Y,L),
@@ -75,9 +86,13 @@ readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
 readans :- % READ INPUT TO ANSWER SIDE QUEST %
 	repeat,
 	write('> Answer > '),
-	read(Input),
-	sideQ(Input),
-	!.
+	read_token(A),
+	(A == 'B' -> sideQ,!;
+	A == 'c' -> write('You decide to go away from the computer...'),nl,
+	write('But don\'t worry. If you have the right answer, you can look to the computer again'),nl,!;
+	write('Your answer is incorrect!'),nl,
+	write('You decide to go away from the computer...'),nl,
+	write('But don\'t worry. If you have the right answer, you can look to the computer again'),nl),!.
 
 readinputconsume :- %READ INPUT TO CONSUME FOOD%
 	repeat,
@@ -147,7 +162,7 @@ menu(drop(X)) :-
 	drop(X), !,fail.
 
 menu(stats) :-
-	stats.
+	stats, !, fail.
 
 menu(sleep):-
 	sleep, !,fail.
@@ -263,7 +278,7 @@ path(n,lab,rumahsakit).
 %% Movement Controller %%
 move(A) :-
 	story(Z),
-	Z > 0,
+	Z =\= 0,
 	currloc(X),
 	path(A,X,Y),
 	retractall(currloc(_)),
@@ -380,7 +395,7 @@ dialogue(doctor) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% SIDE QUEST %%%%%%%%%
-sideQ(b) :-
+sideQ :-
 	sq1(X),
 	Y is 1,
 	retract(sq1(X)),
@@ -390,12 +405,12 @@ sideQ(b) :-
 	write('It\'s your neighbor\'s ghost!!'),nl,
 	write('(you can talk to him)'),nl,
 	!.
-
-sideQ(cancel) :- !.
+/*
+sideQ("cancel") :- !.
 
 sideQ(_) :-
 	write('Hahaha I told you it\'s hard!! Try again!!'),nl,fail.
-
+*/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% OBJECT CONTROLLER %%%%%%%%%
@@ -403,7 +418,7 @@ sideQ(_) :-
 fixObj([table,bloodyfloor],rumah).
 fixObj([road],jalan1).
 fixObj([computer,dirtyfloor],nbhouse).
-fixObj([car,road],jalanraya1).
+fixObj([car,aspal],jalanraya1).
 fixObj([herbs,footpath],tamankota).
 fixObj([refrigerator,shelf,messyfloor],toko).
 fixObj([monitor,table,slipperyfloor],kantorpolisi).
@@ -411,8 +426,8 @@ fixObj([recipes,shelf,cleanfloor],tokoobat).
 fixObj([wideroad],jalanraya2).
 fixObj([smallroad],jalanraya3).
 fixObj([sportstore,floor],mall).
-fixObj([guncabinets],tokosenjata).
-fixObj([machine],lab).
+fixObj([guncabinets,carpet],tokosenjata).
+fixObj([machine,labfloor],lab).
 
 %%%% ACTIVE OBJ LIST %%%%
 showobj(X) :-
@@ -563,24 +578,9 @@ drop(X) :-
 	asserta(items(L2,V,inventory)),
 	retract(items(Li,V,dirtyfloor)),
 	asserta(items([X|Li],V,dirtyfloor)), !.
-/*
-fixObj([table,bloodyfloor],rumah).
-fixObj([road],jalan1).
-fixObj([computer,dirtyfloor],nbhouse).
-fixObj([car,road],jalanraya1).
-fixObj([herbs,footpath],tamankota).
-fixObj([refrigerator,shelf,messyfloor],toko).
-fixObj([monitor,table,slipperyfloor],kantorpolisi).
-fixObj([recipes,shelf,cleanfloor],tokoobat).
-fixObj([wideroad],jalanraya2).
-fixObj([smallroad],jalanraya3).
-fixObj([sportstore,floor],mall).
-fixObj([guncabinets],tokosenjata).
-fixObj([machine],lab).
-
-*/
+	
 drop(X) :-
-	currloc(jalan1),
+	currloc(jalanraya1),
 	itemcnt(A),
 	B is A-1,
 	retract(itemcnt(A)),
@@ -590,8 +590,143 @@ drop(X) :-
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
 	asserta(items(L2,V,inventory)),
-	retract(items(Li,V,road)),
-	asserta(items([X|Li],V,road)), !.
+	retract(items(Li,V,aspal)),
+	asserta(items([X|Li],V,aspal)), !.
+drop(X) :-
+	currloc(tamankota),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,footpath)),
+	asserta(items([X|Li],V,footpath)), !.
+drop(X) :-
+	currloc(toko),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,messyfloor)),
+	asserta(items([X|Li],V,messyfloor)), !.
+drop(X) :-
+	currloc(kantorpolisi),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,slipperyfloor)),
+	asserta(items([X|Li],V,slipperyfloor)), !.
+drop(X) :-
+	currloc(tokoobat),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,cleanfloor)),
+	asserta(items([X|Li],V,cleanfloor)), !.
+/*
+fixObj([guncabinets],tokosenjata).
+fixObj([machine],lab).
+
+*/
+drop(X) :-
+	currloc(jalanraya2),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,wideroad)),
+	asserta(items([X|Li],V,wideroad)), !.
+drop(X) :-
+	currloc(jalanraya3),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,smallroad)),
+	asserta(items([X|Li],V,smallroad)), !.
+drop(X) :-
+	currloc(mall),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,floor)),
+	asserta(items([X|Li],V,floor)), !.
+drop(X) :-
+	currloc(jalanraya2),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,wideroad)),
+	asserta(items([X|Li],V,wideroad)), !.
+drop(X) :-
+	currloc(tokosenjata),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,carpet)),
+	asserta(items([X|Li],V,carpet)), !.
+drop(X) :-
+	currloc(lab),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,labfloor)),
+	asserta(items([X|Li],V,labfloor)), !.
 drop(X) :-
 	write('You don\'t have '), write(X), write(' in your inventory!'),nl,!.
 /*
@@ -645,6 +780,7 @@ consumes(X) :-
 	retract(items(L,consumables,inventory)),
 	asserta(items(L2,consumables,inventory)),
 	hpadd(5),
+	hp(C),
 	itemcnt(D),
 	E is D-1,
 	retract(itemcnt(D)),
@@ -682,13 +818,23 @@ describe(rumah) :-
 	write('The door is to the south'),nl.
 
 describe(jalan1) :-
+	story(1),
 	scene(two),nl,
+	write('There\'re a lot of dead zombies here'),nl,
+	write('To the north is your lovely house'),nl,
+	write('To the east is your neighbor\'s house'),nl.
+describe(jalan1) :-
 	write('There\'re a lot of dead zombies here'),nl,
 	write('To the north is your lovely house'),nl,
 	write('To the east is your neighbor\'s house'),nl.
 
 describe(nbhouse) :-
 	scene(three),
+	write('Your neighbor\'s house look messy.'),nl,
+	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
+	write('The air is reeking of his rotten flesh.'),nl,
+	write('To the west is the exit.'),nl.
+describe(nbhouse) :-
 	write('Your neighbor\'s house look messy.'),nl,
 	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
 	write('The air is reeking of his rotten flesh.'),nl,
@@ -816,10 +962,10 @@ scene(three) :-
 % Event Tag %
 event(bandage) :-
 	story(C),
-	C == 0,
+	C =:= 0,
 	write('You used the bandage to wrap your wounded foot.'),nl,
 	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl,
-	story(X), Y is 1, retract(story(X)), asserta(story(Y)).
+	Y is 1, retractall(story), asserta(story(Y)).
 
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
