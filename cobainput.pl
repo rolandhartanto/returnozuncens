@@ -6,6 +6,7 @@
 :- dynamic(hp/1).
 :- dynamic(npcd/2).
 :- dynamic(sq1/1).
+:- dynamic(story/1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -26,6 +27,7 @@ init :-
 	asserta(items([apple],consumables,inventory)),
 	asserta(items([],consumables,bloodyfloor)),
 	asserta(sq1(0)),
+	asserta(story(0)),
 	asserta(currloc(rumah)),
 	asserta(itemcnt(2)),
 	asserta(hp(100)),
@@ -133,6 +135,9 @@ menu(object) :-
 	showobj(X),
 	!,fail.
 
+menu(use(X)) :-
+	use(X), !,fail.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%  Move Actions  %%
@@ -179,7 +184,6 @@ menuinvent(drop) :-
 	write('in your inventory'),nl,
 	readinputdrop,
 	!.
-
 
 menuinvent(cancel) :- !.
 
@@ -317,7 +321,7 @@ dialogue(ghost) :-
 	write('Ghost : Ah! My assignment is finally done. Now I can meet my lecturer peacefully in the afterlife.'),nl,
 	write('Ghost : Thank you, my neighbor. Be careful with your surrounding and don\'t easily trust anyone.'),nl,
 	write('Ghost : <vanished into thin air>'),nl,
-	write('You   : (So, should I trust him or not?)').
+	write('You   : (So, should I trust him or not?)'),nl.
 
 dialogue(girl) :-
 	write('<crying in english>'),nl,
@@ -474,17 +478,17 @@ take(X) :-
 	asserta(items(L2,V,Y)),
 	retract(items(Li,V,inventory)),
 	asserta(items([X|Li],V,inventory)),
-	
+
 	%%%dialogue(X) buat keterangan objek%%%
 	%%%tampilin pilihan buat ambil objek ke tangan atau disimpen balik atau ke inventory%%%
 	!,fail.
-	
+
 take(X) :-
 	itemcnt(A),
 	A =:= 3,
 	write('Your inventory is full'),nl,
 	!,fail.
-	
+
 take(X) :-
 	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -589,9 +593,9 @@ consumes(X) :-
 	fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-use_qi(cancel):- !.
+use(cancel):- !.
 
-use_qi(X) :-
+use(X) :-
 	items(L,questitems,inventory),
 	rmember(X,L,L2),
 	retract(items(L,questitems,inventory)),
@@ -632,6 +636,7 @@ describe(tamankota) :-
 	write('The City Park was green before. Now it is a deserted place.'),nl,
 	write('The only living things are some herbs and flower that once beautifully decorated the park...'),nl,
 	write('...and a little girl sitting on the bench. Her quiet but terrifiying cry sent a chill through your spine.'),nl,
+	write('Maybe I should talk to her.'),nl,
 	write('The suburbs is to the north.'),nl,
 	write('The southern main road is to the south.'),nl,!.
 
@@ -710,7 +715,9 @@ scene(prologue) :-
 
 scene(one) :-
 	write('For now, I should stop the bleeding. I remembered that I have a BANDAGE in my INVENTORY. I should use it.'),nl,
-	write('Type \'inventory.\' to open INVENTORY.'),nl.
+	write('Type \'inventory.\' to open INVENTORY,'),nl,
+	write('then type \'questitems.\' to access QUEST ITEMS,'),nl,
+	write('and type \'bandage.\' to use the BANDAGE.'),nl.
 
 scene(two) :-
 	write('I\'m not going to die like those miserable creature. I will cure my infection and survive this ordeal.'),nl,
@@ -825,4 +832,3 @@ savePos(X) :-
 	currloc(X),
 	write(Pita,'currloc('),
 	write(Pita,X),write(Pita,').').
-
