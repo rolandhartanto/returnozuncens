@@ -13,7 +13,7 @@
 start :-
 	init,
 	currloc(X),
-	describe(X),nl,
+	scene(one),nl,
 	readinputgeneral.
 
 init :-
@@ -74,21 +74,28 @@ readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
 
 readans :- % READ INPUT TO ANSWER SIDE QUEST %
 	repeat,
-	write('> answer > '),
+	write('> Answer > '),
 	read(Input),
 	sideQ(Input),
 	!.
 
 readinputconsume :- %READ INPUT TO CONSUME FOOD%
 	repeat,
-	write('> consume > '),
+	write('> Consume > '),
 	read(Input),
 	consumes(Input),
 	!.
 
+readinputusequestitem :-
+	repeat,
+	write('> Use > '),
+	read(Input),
+	use_qi(Input),
+	!.
+
 readinputdrop :- %READ INPUT TO DROP ITEM%
 	repeat,
-	write('> drop > '),
+	write('> Drop > '),
 	read(Input),
 	currloc(X),
 	drops(Input,X),
@@ -142,7 +149,9 @@ menu(_) :- write('That option is not available'), nl, fail.
 menuinvent(questitems) :-
     write('You have '),
     inventlist(questitems),
-    write('in your quest items slot'),nl, !, fail.
+    write('in your quest items slot'),nl,
+		readinputusequestitem,
+		!.
 
 menuinvent(consumables) :-
     write('You have '),
@@ -396,7 +405,6 @@ listobj([Y|T]) :-
 
 %%%% ACTIVE OBJ CONTROLLER %%%%
 selectFix(cancel,_,_) :- !.
-
 selectFix(computer,nbhouse,_):-
 	write('(/*RULES*/)'),nl,
 	write('append([ ], X, X) :- !.'),nl,
@@ -420,8 +428,6 @@ listobjfix([]).
 listobjfix([Z|T]) :-
 	write('- '), tag(Z),write('('), write(Z), write(')'), nl,
 	listobjfix(T).
-
-
 %%%% PASSIVE OBJECT LOCATION %%%%
 /* rumah */
 objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,
@@ -429,21 +435,18 @@ objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,
 		bugspray,alcohol,water,lebarancookie,mangosten,zombiesblood,mistletoe]).
 
 %%%% PASSIVE OBJ LIST %%%%
-
 showobjpas(X) :-
-	items(L2,V,X),!,
+	/*write('Take :'),nl,*/
+	items(L2,V,X),
 	listobjpas(L2),
 	write('- Cancel'), nl.
 
-
-showobjpas(X) :-
-	write('There\'s no such thing as that'),
-	nl,
-	!.
+showobjpas(_) :-
+	write('There\'s nothing here'),nl.
 
 listobjpas([]).
 listobjpas([Z|T]) :-
-	write('- '), tag(Z),write('('), write(Z), write(')'), nl,
+	write('- '), write(tag(Z)),write('('), write(Z), write(')'), nl,
 	listobjpas(T).
 
 %%%% PASSIVE OBJ CONTROLLER %%%%
@@ -576,7 +579,20 @@ consumes(X) :-
 	fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+use_qi(cancel):- !.
 
+use_qi(X) :-
+	items(L,questitems,inventory),
+	rmember(X,L,L2),
+	retract(items(L,questitems,inventory)),
+	asserta(items(L2,questitems,inventory)),
+	itemcnt(D),
+	E is D-1,
+	retract(itemcnt(D)),
+	asserta(itemcnt(E)),
+	event(X).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% DIALOGUE CONTROLLER %%%%%%%%%
 describe(rumah) :-
@@ -693,6 +709,16 @@ scene(two) :-
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
 	write('the gate and pushed a body of a zombie to clear the way.'),nl.
 
+scene(three) :-
+	write('You decided to check on your neighbor. You were not that close with him, but it would be nice to have a living companion.'),nl,
+	write('You pushed open the unlocked door. It was dark there. The only light sources are the light from the outside and the flickering'),nl,
+	write('light across the room. The light is from a turned on monitor. It is illuminating a familiar figure of your neighbor. Your'),nl,
+	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl.
+
+% Event Tag %
+event(bandage) :-
+	write('You used the bandage to wrap your wounded foot.'),nl,
+	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl.
 
 
 %% Line Tag %%
