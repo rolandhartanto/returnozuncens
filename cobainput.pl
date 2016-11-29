@@ -13,7 +13,7 @@
 %%%%%%%%% GAME START CONTROLLER %%%%%%%%%
 start :-
 	init,
-	currloc(X),
+	%currloc(X),%
 	scene(one),nl,
 	readinputgeneral.
 
