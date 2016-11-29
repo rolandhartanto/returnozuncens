@@ -478,14 +478,11 @@ selectFix(computer,nbhouse,_):-
 	readans,
 	!.
 
+
 selectFix(X,_,_) :-
 	!,items(List,_,X),
 	listobjpas(List),
 	fail,!.
-
-selectFix(X,_,_) :-
-	write('There\'s nothing in there '),nl.
-
 
 listobjfix([]).
 listobjfix([Z|T]) :-
