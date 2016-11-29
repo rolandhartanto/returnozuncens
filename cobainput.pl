@@ -611,7 +611,7 @@ find(X,Y) :-
 
 take(_) :-
 	itemcnt(A),
-	A >= 8,
+	A >= 10,
 	write('Your inventory is full'),nl,
 	!.
 
@@ -1314,11 +1314,11 @@ checkrecipe :-
 	ismember(lebarancookie,L),
 	ismember(mangosten,L),
 	ismember(mistletoe,L),
-	%ismember(alcohol,L),%
-	%ismember(shotgun,L),%
-	%ismember(aquadest,L),
+	ismember(alcohol,L),
+	ismember(shotgun,L),
+	ismember(aquadest,L),
 	ismember(zombiesblood,L),
-	write('The recipe is complete! Now you can make the cure!'),nl.
+	write('The recipe is complete! Now you can make the cure! You win !!'),nl.
 sleep :-
 	currloc(rumah), hpadd(20), hp(X),
 	write('You closed your eyes for today, it\'s been a rough day'), nl,
