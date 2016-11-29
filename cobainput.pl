@@ -85,14 +85,15 @@ readinputconsume :- %READ INPUT TO CONSUME FOOD%
 	read(Input),
 	consumes(Input),
 	!.
-
+/*
 readinputusequestitem :-
 	repeat,
 	write('> Use > '),
 	read(Input),
-	use(Input),
+	use_qi(Input),
 	!.
-
+*/
+/*
 readinputdrop :- %READ INPUT TO DROP ITEM%
 	repeat,
 	write('> Drop > '),
@@ -100,7 +101,7 @@ readinputdrop :- %READ INPUT TO DROP ITEM%
 	currloc(X),
 	drops(Input,X),
 	!.
-
+*/
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% GENERAL MENU CONTROLLER %%%%%%%%%
@@ -173,8 +174,9 @@ menuinvent(questitems) :-
     inventlist(questitems),
     write('in your quest items slot'),nl,
 		scene(one_2),
+	/*
 		readinputusequestitem,
-		!.
+		*/!.
 
 menuinvent(consumables) :-
     write('You have '),
@@ -187,7 +189,7 @@ menuinvent(consume) :-
     write('in your consumables items slot'),nl,
 	readinputconsume,
 	!.
-
+/*
 menuinvent(drop) :-
 	write('You have '),
 	inventlist(questitems),
@@ -195,7 +197,7 @@ menuinvent(drop) :-
 	write('in your inventory'),nl,
 	readinputdrop,
 	!.
-
+*/
 menuinvent(cancel) :- !.
 
 menuinvent(_) :- write('That option is not available'), nl, fail.
@@ -509,14 +511,13 @@ take(X) :-
 
 %%%% DROP ITEM %%%%
 
-drops(cancel,_) :- !.
-drops(_,_) :-
+drop(X) :-
 	itemcnt(A),
 	A =:= 0,
 	write('You don\'t have any item in your inventory!'),nl,
-	!,fail.
+	!.
 
-drops(X,rumah) :-
+drop(X) :-
 	currloc(rumah),
 	itemcnt(A),
 	B is A-1,
@@ -528,10 +529,51 @@ drops(X,rumah) :-
 	retract(items(L,V,inventory)),
 	asserta(items(L2,V,inventory)),
 	retract(items(Li,V,bloodyfloor)),
-	asserta(items([X|Li],V,bloodyfloor)), !,
-	fail.
+	asserta(items([X|Li],V,bloodyfloor)), !.
 
-drops(X,jalan1) :-
+drop(X) :-
+	currloc(jalan1),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,road)),
+	asserta(items([X|Li],V,road)), !.
+
+drop(X) :-
+	currloc(nbhouse),
+	itemcnt(A),
+	B is A-1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
+	
+	items(L,V,inventory),
+	rmember(X,L,L2),
+	retract(items(L,V,inventory)),
+	asserta(items(L2,V,inventory)),
+	retract(items(Li,V,dirtyfloor)),
+	asserta(items([X|Li],V,dirtyfloor)), !.
+/*
+fixObj([table,bloodyfloor],rumah).
+fixObj([road],jalan1).
+fixObj([computer,dirtyfloor],nbhouse).
+fixObj([car,road],jalanraya1).
+fixObj([herbs,footpath],tamankota).
+fixObj([refrigerator,shelf,messyfloor],toko).
+fixObj([monitor,table,slipperyfloor],kantorpolisi).
+fixObj([recipes,shelf,cleanfloor],tokoobat).
+fixObj([wideroad],jalanraya2).
+fixObj([smallroad],jalanraya3).
+fixObj([sportstore,floor],mall).
+fixObj([guncabinets],tokosenjata).
+fixObj([machine],lab).
+
+*/	
+drop(X) :-
 	currloc(jalan1),
 	itemcnt(A),
 	B is A-1,
@@ -543,10 +585,11 @@ drops(X,jalan1) :-
 	retract(items(L,V,inventory)),
 	asserta(items(L2,V,inventory)),
 	retract(items(Li,V,road)),
-	asserta(items([X|Li],V,road)), !,
-	fail.
-
-drops(X,nbhouse) :-
+	asserta(items([X|Li],V,road)), !.
+drop(X) :-
+	write('You don\'t have '), write(X), write(' in your inventory!'),nl,!.
+/*
+drops(X) :-
 	currloc(jalan1),
 	itemcnt(A),
 	B is A-1,
@@ -559,7 +602,7 @@ drops(X,nbhouse) :-
 	asserta(items(L2,V,inventory)),
 	retract(items(Li,V,dirtyfloor)),
 	asserta(items([X|Li],V,dirtyfloor)), !,
-	fail.
+	fail.*/
 /*lanjutin lagi buat lokasi lainnya di peta*/
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -613,8 +656,6 @@ consumes(X) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-use(cancel) :- !.
-
 use(X) :-
 	items(L,questitems,inventory),
 	rmember(X,L,L2),
@@ -624,7 +665,7 @@ use(X) :-
 	E is D-1,
 	retract(itemcnt(D)),
 	asserta(itemcnt(E)),
-	event(X), !, fail.
+	event(X), !.
 
 use(_) :-
 	write('You don\'t have that item in your INVENTORY.'), !, fail.
@@ -774,7 +815,7 @@ event(bandage) :-
 	story(C),
 	C == 0,
 	write('You used the bandage to wrap your wounded foot.'),nl,
-	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl.
+	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl,
 	story(X), Y is 1, retract(story(X)), asserta(story(Y)).
 
 %% Line Tag %%
@@ -947,3 +988,16 @@ save(X) :-
 	saveScene(Pita),
 	%% add facts to write here %%
 	close(Pita).
+
+%% General Actions %%
+sleep :-
+	currloc(rumah), hpadd(20), hp(X),
+	write('You closed your eyes for today, it\'s been a rough day'), nl,
+	write('HP :'), nl,
+	 write(X); write('You can\'t sleep here, it\'s too dangerous to sleep here'), nl.
+
+hpadd(X) :-
+	hp(Y),
+	retractall(hp),
+	Y+X >= 100 -> asserta(hp(100));
+	asserta(hp(Y+X)).
