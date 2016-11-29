@@ -460,11 +460,6 @@ listobjpas([Z|T]) :-
 	listobjpas(T).
 
 %%%% PASSIVE OBJ CONTROLLER %%%%
-/*
-take(X) :-
-	inventory(L,
-	assert(
-*/
 take(cancel) :- !.
 take(X) :-
 	itemcnt(A),
@@ -479,17 +474,17 @@ take(X) :-
 	asserta(items(L2,V,Y)),
 	retract(items(Li,V,inventory)),
 	asserta(items([X|Li],V,inventory)),
-
+	
 	%%%dialogue(X) buat keterangan objek%%%
 	%%%tampilin pilihan buat ambil objek ke tangan atau disimpen balik atau ke inventory%%%
 	!,fail.
-
+	
 take(X) :-
 	itemcnt(A),
 	A =:= 3,
 	write('Your inventory is full'),nl,
 	!,fail.
-
+	
 take(X) :-
 	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -622,7 +617,7 @@ describe(jalan1) :-
 
 describe(nbhouse) :-
 	write('Your neighbor\'s house look messy.'),nl,
-	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
+	write('You saw your dead neighbor if front of his still turned on computer, looking at your with his empty eye.'),nl,
 	write('The air is reeking of his rotten flesh.'),nl,
 	write('To the west is the exit.'),nl.
 
@@ -830,3 +825,4 @@ savePos(X) :-
 	currloc(X),
 	write(Pita,'currloc('),
 	write(Pita,X),write(Pita,').').
+
