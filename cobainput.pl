@@ -6,6 +6,7 @@
 :- dynamic(sq1/1).
 :- dynamic(story/1).
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% GAME START CONTROLLER %%%%%%%%%
@@ -254,6 +255,8 @@ path(n,lab,rumahsakit).
 
 %% Movement Controller %%
 move(A) :-
+	story(Z),
+	Z > 0,
 	currloc(X),
 	path(A,X,Y),
 	retractall(currloc),
@@ -735,6 +738,7 @@ scene(one) :-
 	write('Type \'inventory.\' to open INVENTORY,'),nl,
 	write('then type \'questitems.\' to access QUEST ITEMS,'),nl,
 	write('I should make sure I didn\'t drop it.'),nl.
+	
 
 scene(two) :-
 	story(1),
