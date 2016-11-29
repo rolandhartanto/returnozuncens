@@ -1102,13 +1102,16 @@ event(bandage) :-
 
 event(molotov) :-
 	story(C),
-	write('You killed all the zombie.'),nl,
-	write('You can go now... '),nl,hp(A),write('HP: '),write(A),nl,
+	write('You threw the molotov to one of the zombie. Somehow the zombie was agile enough to evade the molotov.'),nl,
+	write('You missed...'),nl,nl,
+	write('...or not.'),nl,
+	write('The molotov landed on an explosive barrel behind the zombie and exploded, burned all of the zombie.'),nl,
+	write('The way are clear now. You escaped unscathed.'),nl,hp(A),write('HP: '),write(A),nl,
 	Y is 6, retractall(story), asserta(story(Y)).
 
 event(softdrink) :-
 	story(C),
-	write('Ok, you can take everything you want ...'),nl,
+	write('Ok, you can take everything you want...'),nl,
 	write('The guns is in that gun cabinet.'),nl,
 	Y is 7, retractall(story(_)), asserta(story(Y)).
 
