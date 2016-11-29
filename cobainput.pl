@@ -574,6 +574,9 @@ take(_) :-
 
 take(X) :-
 	find(X,Y),
+	currloc(Z),
+	fixObj(Lz,Z),
+	ismember(Y,Lz),
 	items(L,V,Y),
 	rmember(X,L,L2),
 	%printlist(L2),%
@@ -838,7 +841,7 @@ findtype(X,Y) :-
 consumes(cancel):- !.
 
 consumes(X) :-
-	findtype(X,consumable),
+	findtype(X,consumables),
 	find(X,inventory),
 	items(L,consumables,inventory),
 	rmember(X,L,L2),
