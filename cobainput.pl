@@ -85,14 +85,14 @@ readinputconsume :- %READ INPUT TO CONSUME FOOD%
 	read(Input),
 	consumes(Input),
 	!.
-
+/*
 readinputusequestitem :-
 	repeat,
 	write('> Use > '),
 	read(Input),
 	use_qi(Input),
 	!.
-
+*/
 readinputdrop :- %READ INPUT TO DROP ITEM%
 	repeat,
 	write('> Drop > '),
@@ -169,8 +169,9 @@ menuinvent(questitems) :-
     write('You have '),
     inventlist(questitems),
     write('in your quest items slot'),nl,
+	/*
 		readinputusequestitem,
-		!.
+		*/!.
 
 menuinvent(consumables) :-
     write('You have '),
@@ -183,7 +184,7 @@ menuinvent(consume) :-
     write('in your consumables items slot'),nl,
 	readinputconsume,
 	!.
-
+/*
 menuinvent(drop) :-
 	write('You have '),
 	inventlist(questitems),
@@ -191,7 +192,7 @@ menuinvent(drop) :-
 	write('in your inventory'),nl,
 	readinputdrop,
 	!.
-
+*/
 menuinvent(cancel) :- !.
 
 menuinvent(_) :- write('That option is not available'), nl, fail.
@@ -502,7 +503,7 @@ take(X) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%% DROP ITEM %%%%
-drops(cancel,_) :- !.
+
 drops(X,_) :-
 	itemcnt(A),
 	A =:= 0,
@@ -515,7 +516,7 @@ drops(X,rumah) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-
+	find(X,inventory),
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -741,7 +742,7 @@ scene(two) :-
 	write('So I think I should start looking right away. I will start by investigating my neighborhood.'),nl,nl,
 	write('You opened the door to the outside. A strong, unpleasant smell of burnt flesh filled your nose.'),nl,
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
-	write('the gate and pushed a body of a zombie to clear the way.'),nl.
+	write('the gate and pushed a body of a zombie to clear the way.'),nl,
 	story(X), Y is 2, retract(story(X)), asserta(story(Y)).
 
 scene(three) :-
@@ -749,13 +750,13 @@ scene(three) :-
 	write('You decided to check on your neighbor. You were not that close with him, but it would be nice to have a living companion.'),nl,
 	write('You pushed open the unlocked door. It was dark there. The only light sources are the light from the outside and the flickering'),nl,
 	write('light across the room. The light is from a turned on monitor. It is illuminating a familiar figure of your neighbor. Your'),nl,
-	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl.
+	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl,
 	story(X), Y is 3, retract(story(X)), asserta(story(Y)).
 
 % Event Tag %
 event(bandage) :-
 	write('You used the bandage to wrap your wounded foot.'),nl,
-	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl.
+	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl,
 	story(X), Y is 1, retract(story(X)), asserta(story(Y)).
 
 %% Line Tag %%
