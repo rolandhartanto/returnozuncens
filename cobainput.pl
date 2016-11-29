@@ -20,6 +20,8 @@ init :-
 	retractall(currloc(_)),
 	retractall(itemcnt(_)),
 	retractall(hp(_)),
+	retractall(story(_)),
+	retractall(sq1(_)),
 	asserta(items([bandage],questitems,inventory)),				%% Initialize facts
 	asserta(items([chocolate,cottoncandy],consumables,table)),
 	asserta(items([apple],consumables,inventory)),
@@ -29,7 +31,6 @@ init :-
 	asserta(currloc(rumah)),
 	asserta(itemcnt(2)),
 	asserta(hp(100)),
-	%asserta(itemcnt(0,tools)),%
 	scene(prologue),
 	nl.
 
@@ -552,7 +553,7 @@ drop(X) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-	
+
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -574,7 +575,7 @@ fixObj([sportstore,floor],mall).
 fixObj([guncabinets],tokosenjata).
 fixObj([machine],lab).
 
-*/	
+*/
 drop(X) :-
 	currloc(jalan1),
 	itemcnt(A),
@@ -683,8 +684,19 @@ describe(jalan1) :-
 	write('To the north is your lovely house'),nl,
 	write('To the east is your neighbor\'s house'),nl.
 
+describe(jalan1) :-
+	write('There\'re a lot of dead zombies here'),nl,
+	write('To the north is your lovely house'),nl,
+	write('To the east is your neighbor\'s house'),nl.
+
 describe(nbhouse) :-
 	scene(three),
+	write('Your neighbor\'s house look messy.'),nl,
+	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
+	write('The air is reeking of his rotten flesh.'),nl,
+	write('To the west is the exit.'),nl.
+
+describe(nbhouse) :-
 	write('Your neighbor\'s house look messy.'),nl,
 	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
 	write('The air is reeking of his rotten flesh.'),nl,
@@ -765,6 +777,7 @@ help :-
 	write('describe - shows your current location and description of place'),nl,
 	write('examine - To examine objects'),nl,
 	write('help - shows this dialogue'),nl,
+	write('stats - shows your current HP and Location'),nl,
 	write('quit - quits the game'),nl.
 
 %%%%%%%% STORY %%%%%%%%%
@@ -776,7 +789,7 @@ scene(prologue) :-
 	write('and turned on my electric fence. It will keep them off for some time, God knows how long. It\'s getting darker'),nl,
 	write('outside. I fell to the floor in my living room, weak and powerless. My whole body was hurting all over and I'),nl,
 	write('realized how painful my wound was. Blood was pooling on the floor, soaked my carpet dark red. It was a miracle'),nl,
-	write('that I could be still alive after been infected for some time. '),nl,nl,nl, write('Rise of the Zombie [UNCENSORED]'),nl.
+	write('that I could be still alive after been infected for some time. '),nl,nl,nl, write('     ----- Rise of the Zombie [UNCENSORED] -----'),nl.
 
 scene(one) :-
 	write('For now, I should stop the bleeding. I remembered that I have a BANDAGE in my INVENTORY. I should use it.'),nl,
