@@ -13,7 +13,7 @@
 start :-
 	init,
 	currloc(X),
-	describe(X),nl,
+	scene(one),nl,
 	readinputgeneral.
 
 init :-
@@ -22,7 +22,7 @@ init :-
 	retractall(itemcnt(_)),
 	retractall(hp(_)),
 	asserta(items([bandage],questitems,inventory)),				%% Initialize facts
-	asserta(items([chocolate,strawberry],consumables,table)),
+	asserta(items([chocolate,cottoncandy],consumables,table)),
 	asserta(items([apple],consumables,inventory)),
 	asserta(items([],consumables,bloodyfloor)),
 	asserta(sq1(0)),
@@ -81,21 +81,28 @@ readinputobjpas(X) :- % READ INPUT TO SELECT OBJECT yg bisa dibawa%
 
 readans :- % READ INPUT TO ANSWER SIDE QUEST %
 	repeat,
-	write('> answer > '),
+	write('> Answer > '),
 	read(Input),
 	sideQ(Input),
 	!.
 
 readinputconsume :- %READ INPUT TO CONSUME FOOD%
 	repeat,
-	write('> consume > '),
+	write('> Consume > '),
 	read(Input),
 	consumes(Input),
 	!.
 
+readinputusequestitem :-
+	repeat,
+	write('> Use > '),
+	read(Input),
+	use_qi(Input),
+	!.
+
 readinputdrop :- %READ INPUT TO DROP ITEM%
 	repeat,
-	write('> drop > '),
+	write('> Drop > '),
 	read(Input),
 	currloc(X),
 	drops(Input,X),
@@ -149,7 +156,9 @@ menu(_) :- write('That option is not available'), nl, fail.
 menuinvent(questitems) :-
     write('You have '),
     inventlist(questitems),
-    write('in your quest items slot'),nl, !, fail.
+    write('in your quest items slot'),nl,
+		readinputusequestitem,
+		!.
 
 menuinvent(consumables) :-
     write('You have '),
@@ -451,11 +460,11 @@ listobjpas([Z|T]) :-
 	listobjpas(T).
 
 %%%% PASSIVE OBJ CONTROLLER %%%%
-
+/*
 take(X) :-
 	inventory(L,
 	assert(
-
+*/
 take(cancel) :- !.
 take(X) :-
 	itemcnt(A),
@@ -470,17 +479,17 @@ take(X) :-
 	asserta(items(L2,V,Y)),
 	retract(items(Li,V,inventory)),
 	asserta(items([X|Li],V,inventory)),
-	
+
 	%%%dialogue(X) buat keterangan objek%%%
 	%%%tampilin pilihan buat ambil objek ke tangan atau disimpen balik atau ke inventory%%%
 	!,fail.
-	
+
 take(X) :-
 	itemcnt(A),
 	A =:= 3,
 	write('Your inventory is full'),nl,
 	!,fail.
-	
+
 take(X) :-
 	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -585,7 +594,20 @@ consumes(X) :-
 	fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+use_qi(cancel):- !.
 
+use_qi(X) :-
+	items(L,questitems,inventory),
+	rmember(X,L,L2),
+	retract(items(L,questitems,inventory)),
+	asserta(items(L2,questitems,inventory)),
+	itemcnt(D),
+	E is D-1,
+	retract(itemcnt(D)),
+	asserta(itemcnt(E)),
+	event(X).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% DIALOGUE CONTROLLER %%%%%%%%%
 describe(rumah) :-
@@ -600,7 +622,7 @@ describe(jalan1) :-
 
 describe(nbhouse) :-
 	write('Your neighbor\'s house look messy.'),nl,
-	write('You saw your dead neighbor if front of his still turned on computer, looking at your with his empty eye.'),nl,
+	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
 	write('The air is reeking of his rotten flesh.'),nl,
 	write('To the west is the exit.'),nl.
 
@@ -702,6 +724,16 @@ scene(two) :-
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
 	write('the gate and pushed a body of a zombie to clear the way.'),nl.
 
+scene(three) :-
+	write('You decided to check on your neighbor. You were not that close with him, but it would be nice to have a living companion.'),nl,
+	write('You pushed open the unlocked door. It was dark there. The only light sources are the light from the outside and the flickering'),nl,
+	write('light across the room. The light is from a turned on monitor. It is illuminating a familiar figure of your neighbor. Your'),nl,
+	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl.
+
+% Event Tag %
+event(bandage) :-
+	write('You used the bandage to wrap your wounded foot.'),nl,
+	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl.
 
 
 %% Line Tag %%
@@ -798,4 +830,3 @@ savePos(X) :-
 	currloc(X),
 	write(Pita,'currloc('),
 	write(Pita,X),write(Pita,').').
-
