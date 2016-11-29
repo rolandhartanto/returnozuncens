@@ -1,7 +1,9 @@
-currloc(rumahsakit).
-hp(75).
+currloc(lab).
+hp(50).
+items([],questitems,inventory).
 items([],consumables,bloodyfloor).
 items([apple],consumables,inventory).
 items([chocolate,cottoncandy],consumables,table).
-items([bandage],questitems,inventory).
-itemcnt(2).
+itemcnt(1).
+sq1(0).
+story(0).
