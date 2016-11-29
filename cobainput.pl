@@ -160,7 +160,7 @@ menu(look) :-
 	story(A),
 	A>6,
 	showobj(tokosenjata),
-	!,fail.		
+	!,fail.
 menu(look) :-
 	currloc(X),
 	showobj(X),
@@ -190,6 +190,9 @@ menu(stats) :-
 
 menu(sleep):-
 	sleep, !,fail.
+
+menu(consume(X)):-
+	consumes(X), !,fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -568,13 +571,13 @@ find(X,Y) :-
 
 take(_) :-
 	itemcnt(A),
-	A =:= 3,
+	A =:= 10,
 	write('Your inventory is full'),nl,
 	!.
 
-take(X) :-
+take(X,Y) :-
+	items(L,_,Y),
 	find(X,Y),
-	items(L,V,Y),
 	rmember(X,L,L2),
 	%printlist(L2),%
 	retract(items(L,V,Y)),
@@ -838,7 +841,7 @@ findtype(X,Y) :-
 consumes(cancel):- !.
 
 consumes(X) :-
-	findtype(X,consumable),
+	findtype(X,consumables),
 	find(X,inventory),
 	items(L,consumables,inventory),
 	rmember(X,L,L2),
@@ -1065,7 +1068,7 @@ event(softdrink) :-
 	write('Ok, you can take everything you want ...'),nl,
 	write('The guns is in that gun cabinet.'),nl,
 	Y is 7, retractall(story), asserta(story(Y)).
-	
+
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
 
