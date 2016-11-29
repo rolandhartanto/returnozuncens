@@ -1314,9 +1314,6 @@ checkrecipe :-
 	ismember(lebarancookie,L),
 	ismember(mangosten,L),
 	ismember(mistletoe,L),
-	ismember(alcohol,L),
-	ismember(shotgun,L),
-	ismember(aquadest,L),
 	ismember(zombiesblood,L),
 	write('The recipe is complete! Now you can make the cure! You win !!'),nl.
 sleep :-
