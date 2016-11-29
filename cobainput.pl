@@ -449,7 +449,7 @@ fixObj([computer,dirtyfloor],nbhouse).
 fixObj([car,aspal],jalanraya1).
 fixObj([herbs,footpath],tamankota).
 fixObj([refrigerator,shelf,messyfloor],toko).
-fixObj([monitor,table,slipperyfloor],kantorpolisi).
+fixObj([monitor,undertable,slipperyfloor],kantorpolisi).
 fixObj([recipes,shelf,cleanfloor],tokoobat).
 fixObj([wideroad],jalanraya2).
 fixObj([smallroad],jalanraya3).
@@ -484,6 +484,9 @@ selectFix(computer,nbhouse,_):-
 	write('/*this rule is used to concate two lists*/'),nl,
 	write('/*Can you find the mistake?*/'),nl,
 	write('/*(clue : change S to another alphabet :D*/'),nl,
+	write('/*your input must follow this format : \'<answer>\'*/'),nl,
+	write('/*example : \'A\'*/'),nl,
+	write('/*warning : don\'t add any character or dot(.) at the endline*/'),nl,
 	readans,
 	!.
 
