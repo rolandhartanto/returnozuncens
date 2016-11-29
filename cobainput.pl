@@ -20,8 +20,35 @@ init :-
 	retractall(currloc(_)),
 	retractall(itemcnt(_)),
 	retractall(hp(_)),
+	/*
+tag(softdrink) :- write('Soft Drink').
+tag(bandage) :- write('Bandage').
+tag(molotov) :- write('Molotov').
+tag(baseballbat) :- write('Baseball Bat').
+tag(syringes) :- write('Syringe').
+tag(mortarAndpestle) :- write('Mortar and Pestle').
+
+tag(bugspray) :- write('Bug Spray (B*ygon)').
+tag(alcohol) :- write('C2H5OH').
+tag(water) :- write('Aquadest').
+tag(lebarancookie) :- write('Khong Guan').
+tag(mangosten) :- write('Mas*in').
+tag(zombiesblood) :- write('Zombie\'s Blood').
+tag(mistletoe) :- write('Mistletoe').
+*/
 	asserta(items([bandage],questitems,inventory)),				%% Initialize facts
 	asserta(items([chocolate,cottoncandy],consumables,table)),
+	asserta(items([zombiesblood],questitems,car)),
+	asserta(items([painkiller],consumables,car)),
+	asserta(items([molotov],questitems,undertable)),
+	asserta(items([mistletoe],questitems,herbs)),
+	asserta(items([bugspray,lebarancookie,softdrink],questitems,shelf)),
+	asserta(items([tokemasnack],consumables,shelf)),
+	asserta(items([mangosten],questitems,refrigerator)),
+	asserta(items([coffee,juice],consumables,refrigerator)),
+	asserta(items([aquadest,mortarAndpestle,syringes,alcohol],questitems,drugshelf)),
+	asserta(items([baseballbat],questitems,sportstore)),
+	asserta(items([shotgun],questitems,guncabinets)),
 	asserta(items([apple],consumables,inventory)),
 	asserta(items([],consumables,bloodyfloor)),
 	asserta(items([],consumables,road)),
@@ -275,9 +302,11 @@ path(n,lab,rumahsakit).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Movement Controller %%
+
 move(A) :-
 	story(Z),
 	Z =\= 0,
+	Z < 4,
 	currloc(X),
 	path(A,X,Y),
 	retractall(currloc(_)),
@@ -480,7 +509,9 @@ listobjfix([Z|T]) :-
 %%%% PASSIVE OBJ LIST %%%%
 showobjpas(X) :-
 	/*write('Take :'),nl,*/
-	items(L2,_,X),
+	items(L,questitems,X),
+	listobjpas(L),
+	items(L2,consumables,X),
 	listobjpas(L2),
 	write('- Cancel'), nl.
 
@@ -489,7 +520,7 @@ showobjpas(_) :-
 
 listobjpas([]).
 listobjpas([Z|T]) :-
-	write('- '), write(tag(Z)),write('('), write(Z), write(')'), nl,
+	write('- '), tag(Z),write('('), write(Z), write(')'), nl,
 	listobjpas(T).
 
 %%%% PASSIVE OBJ CONTROLLER %%%%
@@ -516,11 +547,11 @@ take(X) :-
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
 	retract(items(Li,V,inventory)),
-	asserta(items([X|Li],V,inventory)),
+	asserta(items([X|Li],V,inventory))
 
 	%%%dialogue(X) buat keterangan objek%%%
 	%%%tampilin pilihan buat ambil objek ke tangan atau disimpen balik atau ke inventory%%%
-	!.
+	.
 
 take(X) :-
 	write('There\'s no '),write(X),write(' in this room!'),nl.
@@ -1022,6 +1053,7 @@ tag(coffee) :- write('Coffee').
 tag(tokemasnack) :- write('Tokema Snack').
 
 % questitems %
+
 tag(softdrink) :- write('Soft Drink').
 tag(bandage) :- write('Bandage').
 tag(molotov) :- write('Molotov').
