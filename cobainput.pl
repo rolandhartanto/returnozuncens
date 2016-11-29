@@ -1183,6 +1183,7 @@ tag(guncabinets) :- write('Gun Cabinets').
 tag(machine) :- write('Machine').
 tag(herbs) :- write('Herbs').
 tag(footpath) :- write('Foot Path').
+tag(aspal) :- write('Aspal').
 
 
 %% objek yang bisa diambil tag %%
@@ -1308,14 +1309,14 @@ save(X) :-
 
 %% General Actions %%
 checkrecipe :-
-	item(L,questitems,inventory),
+	items(L,questitems,inventory),
 	ismember(bugspray,L),
 	ismember(lebarancookie,L),
 	ismember(mangosten,L),
 	ismember(mistletoe,L),
-	ismember(alcohol,L),
-	ismember(shotgun,L),
-	ismember(aquadest,L),
+	%ismember(alcohol,L),%
+	%ismember(shotgun,L),%
+	%ismember(aquadest,L),
 	ismember(zombiesblood,L),
 	write('The recipe is complete! Now you can make the cure!'),nl.
 sleep :-
