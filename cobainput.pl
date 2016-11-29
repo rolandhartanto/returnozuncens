@@ -490,7 +490,7 @@ dialogue(doctor) :-
 	write('You        : I bring the ingredient to complete the cure.'),nl,
 	write('The Doctor : Your ingredient is not complete!!'),nl,
 	write('The Doctor : And.... You\'re infected! Kill yourself or ... I\'ll do it myself'),nl.
-	
+
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -565,7 +565,7 @@ selectFix(computer,nbhouse,_):-
 selectFix(car,jalanraya1,_):-
 	story(C), C < 4,
 	write('You carefully approached the car. You could see a man sitting unconscious on the front seat.'),nl,
-	write('Dried blood covered half of his face. You didn\'t see any sign of infection. You moved closer'),nl,
+	write('Dried blood covered half of his face. You saw some signs of infection. You moved closer'),nl,
 	write('to inspect the car.'),nl,nl,
 	write('The man suddenly opened his eyes wide. You felt his hand on your shoulder. Shocked, you punched'),nl,
 	write('the man hard on his face. Then he was dead for real.'),nl,
@@ -998,7 +998,7 @@ describe(jalanraya2) :-
 	write('It was a zombie. You were thinking to run away, but the thought vanished when you saw another zombie closing from the direction you came from.'),nl,
 	write('Another zombie closing from your left and more zombies from your right. You are surrounded.'),nl,
 	write('What will you do: flee or fight?'),nl.
-	
+
 
 describe(jalanraya2) :-
 	story(C),
@@ -1167,6 +1167,7 @@ tag(refrigerator) :- write('Refrigerator').
 tag(shelf) :- write('Shelf').
 tag(messyfloor) :- write('Messyfloor').
 tag(car) :- write('Car').
+tag(aspal) :- write('Asphalt').
 tag(road) :- write('Road').
 tag(monitor) :- write('Monitor').
 tag(undertable) :- write('Under Table').
