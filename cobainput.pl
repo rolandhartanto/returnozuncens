@@ -11,7 +11,6 @@
 %%%%%%%%% GAME START CONTROLLER %%%%%%%%%
 start :-
 	init,
-	currloc(X),
 	scene(one),nl,
 	readinputgeneral.
 
@@ -153,7 +152,7 @@ menu(s) :- move(s), nl, !, fail.
 menu(e) :- move(e), nl, !, fail.
 menu(w) :- move(w), nl, !, fail.
 
-menu(quit) :- write(''),nl,!.
+menu(quit) :- true,!.
 menu(describe) :- currloc(X), describe(X), !, fail.
 menu(help) :- help, !, fail.
 menu(y) :- !.
@@ -433,12 +432,12 @@ selectFix(computer,nbhouse,_):-
 	readans,
 	!.
 
-selectFix(X,Y,L) :-
+selectFix(X,_,_) :-
 	items(List,_,X),
 	listobjpas(List),
 	!.
 
-selectFix(X,_,[]) :-
+selectFix(_,_,[]) :-
 	write('There\'s nothing in there '),nl,fail.
 
 
@@ -455,7 +454,7 @@ listobjfix([Z|T]) :-
 %%%% PASSIVE OBJ LIST %%%%
 showobjpas(X) :-
 	/*write('Take :'),nl,*/
-	items(L2,V,X),
+	items(L2,_,X),
 	listobjpas(L2),
 	write('- Cancel'), nl.
 
@@ -471,6 +470,12 @@ listobjpas([Z|T]) :-
 find(X,Y) :-
 	items(L,_,Y),
 	ismember(X,L).
+
+take(_) :-
+	itemcnt(A),
+	A =:= 3,
+	write('Your inventory is full'),nl,
+	!.
 
 take(X) :-
 	find(X,Y),
@@ -492,18 +497,12 @@ take(X) :-
 	!.
 
 take(X) :-
-	itemcnt(A),
-	A =:= 3,
-	write('Your inventory is full'),nl,
-	!.
-
-take(X) :-
 	write('There\'s no '),write(X),write(' in this room!'),nl.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%% DROP ITEM %%%%
 drops(cancel,_) :- !.
-drops(X,_) :-
+drops(_,_) :-
 	itemcnt(A),
 	A =:= 0,
 	write('You don\'t have any item in your inventory!'),nl,
@@ -741,7 +740,7 @@ scene(two) :-
 	write('So I think I should start looking right away. I will start by investigating my neighborhood.'),nl,nl,
 	write('You opened the door to the outside. A strong, unpleasant smell of burnt flesh filled your nose.'),nl,
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
-	write('the gate and pushed a body of a zombie to clear the way.'),nl.
+	write('the gate and pushed a body of a zombie to clear the way.'),nl,
 	story(X), Y is 2, retract(story(X)), asserta(story(Y)).
 
 scene(three) :-
@@ -749,13 +748,13 @@ scene(three) :-
 	write('You decided to check on your neighbor. You were not that close with him, but it would be nice to have a living companion.'),nl,
 	write('You pushed open the unlocked door. It was dark there. The only light sources are the light from the outside and the flickering'),nl,
 	write('light across the room. The light is from a turned on monitor. It is illuminating a familiar figure of your neighbor. Your'),nl,
-	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl.
+	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl,
 	story(X), Y is 3, retract(story(X)), asserta(story(Y)).
 
 % Event Tag %
 event(bandage) :-
 	write('You used the bandage to wrap your wounded foot.'),nl,
-	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl.
+	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl,
 	story(X), Y is 1, retract(story(X)), asserta(story(Y)).
 
 %% Line Tag %%
@@ -876,7 +875,7 @@ saveItems(Pita) :-
 	nl(Pita),fail;true.
 
 
-saveSQ(Pita) :-
+saveItemCnt(Pita) :-
 	itemcnt(X),
 	write(Pita,'itemcnt('),
 	write(Pita,X),
@@ -886,6 +885,13 @@ saveSQ(Pita) :-
 saveSQ(Pita) :-
 	sq1(X),
 	write(Pita,'sq1('),
+	write(Pita,X),
+	write(Pita,').'),
+	nl(Pita).
+
+saveStory(Pita) :-
+	sq1(X),
+	write(Pita,'story('),
 	write(Pita,X),
 	write(Pita,').'),
 	nl(Pita).
@@ -916,6 +922,8 @@ save(X) :-
 	savePos(Pita),
 	saveHP(Pita),
 	saveItems(Pita),
+	saveItemCnt(Pita),
 	saveSQ(Pita),
+	saveScene(Pita),
 	%% add facts to write here %%
 	close(Pita).
