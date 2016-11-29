@@ -522,7 +522,7 @@ fixObj([car,aspal],jalanraya1).
 fixObj([herbs,footpath],tamankota).
 fixObj([refrigerator,shelf,messyfloor],toko).
 fixObj([monitor,undertable,slipperyfloor],kantorpolisi).
-fixObj([recipes,shelf,cleanfloor],tokoobat).
+fixObj([recipes,drugshelf,cleanfloor],tokoobat).
 fixObj([wideroad],jalanraya2).
 fixObj([smallroad],jalanraya3).
 fixObj([sportstore,floor],mall).
