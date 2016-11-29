@@ -74,13 +74,6 @@ readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
     selectFix(Input,Y,L),
     !.
 
-readinputobjpas(X) :- % READ INPUT TO SELECT OBJECT yg bisa dibawa%
-	repeat,
-    write('> '),tag(X),write(' > '),
-    read(Input),
-    take(Input),
-    !.
-
 readans :- % READ INPUT TO ANSWER SIDE QUEST %
 	repeat,
 	write('> Answer > '),
@@ -425,22 +418,20 @@ selectFix(computer,nbhouse,_):-
 	write('/*(clue : change S to another alphabet :D*/'),nl,
 	readans,
 	!.
+
+selectFix(X,Y,L) :-
+	items(List,_,X),
+	listobjpas(List),
+	!.
+
 selectFix(X,_,[]) :-
-	write('There\'s nothing inside this '),write(X),nl,fail.
-selectFix(X,_,[X|_]) :-
-	%%%dialogue(X) buat keterangan objek%%%
-	%%%tampilin ada objek pasif apa aja di situ%%%
-	showobjpas(X),
-	!,fail.
-
-selectFix(X,Y,[_|T]) :-
-	selectFix(X,Y,T).
-
-selectActive(cancel) :- !.
-selectActive(X) :-
-	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
+	write('There\'s nothing in there '),nl,fail.
 
 
+listobjfix([]).
+listobjfix([Z|T]) :-
+	write('- '), tag(Z),write('('), write(Z), write(')'), nl,
+	listobjfix(T).
 %%%% PASSIVE OBJECT LOCATION %%%%
 /* rumah */
 objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,
@@ -452,8 +443,7 @@ showobjpas(X) :-
 	/*write('Take :'),nl,*/
 	items(L2,V,X),
 	listobjpas(L2),
-	write('- Cancel'), nl,
-	readinputobjpas(X),!.
+	write('- Cancel'), nl.
 
 showobjpas(_) :-
 	write('There\'s nothing here'),nl.
