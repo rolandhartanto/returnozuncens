@@ -140,7 +140,7 @@ menu(inventory) :-
 	write('- questitems'),nl,
 	write('- consumables'),nl,
 	write('- tools'),nl,
-	write('- consume (only if you want to consume your consumable items)'),nl,
+	%write('- consume (only if you want to consume your consumable items)'),nl,
 	write('- cancel'),nl,
 	readinputinvent, !, fail.
 
@@ -228,12 +228,12 @@ menuinvent(consumables) :-
     inventlist(consumables),
     write('in your consumables items slot'),nl, !, fail.
 
-menuinvent(consume) :-
+/*menuinvent(consume) :-
     write('You have '),
     inventlist(consumables),
     write('in your consumables items slot'),nl,
-	readinputconsume,
-	!.
+	%readinputconsume,
+	!.*/
 /*
 menuinvent(drop) :-
 	write('You have '),
@@ -571,13 +571,18 @@ find(X,Y) :-
 
 take(_) :-
 	itemcnt(A),
-	A =:= 10,
+	A >= 3,
 	write('Your inventory is full'),nl,
 	!.
 
-take(X,Y) :-
+take(X) :-
 	items(L,_,Y),
 	find(X,Y),
+	findtype(X,V),
+	currloc(Z),
+	fixObj(Lz,Z),
+	ismember(Y,Lz),
+	items(L,V,Y),
 	rmember(X,L,L2),
 	%printlist(L2),%
 	retract(items(L,V,Y)),
@@ -1061,13 +1066,13 @@ event(molotov) :-
 	story(C),
 	write('You killed all the zombie.'),nl,
 	write('You can go now... '),nl,hp(A),write('HP: '),write(A),nl,
-	Y is 6, retractall(story), asserta(story(Y)).
+	Y is 6, retractall(story(_)), asserta(story(Y)).
 
 event(softdrink) :-
 	story(C),
 	write('Ok, you can take everything you want ...'),nl,
 	write('The guns is in that gun cabinet.'),nl,
-	Y is 7, retractall(story), asserta(story(Y)).
+	Y is 7, retractall(story(_)), asserta(story(Y)).
 
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
@@ -1203,7 +1208,7 @@ saveSQ(Pita) :-
 	nl(Pita).
 
 saveStory(Pita) :-
-	sq1(X),
+	story(X),
 	write(Pita,'story('),
 	write(Pita,X),
 	write(Pita,').'),
