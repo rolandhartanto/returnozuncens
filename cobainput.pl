@@ -149,7 +149,7 @@ menu(talk) :-
 	shownpc(X),
 	!,fail.
 
-menu(object) :-
+menu(look) :-
 	currloc(X),
 	showobj(X),
 	!,fail.
@@ -189,7 +189,7 @@ menu(w) :- move(w), nl, !, fail.
 
 menu(quit) :- true,!.
 menu(describe) :- currloc(X), describe(X), !, fail.
-menu(help) :- help, !, fail.
+menu(instructions) :- help, !, fail.
 menu(y) :- !.
 menu(save) :- !.
 menu(_) :- write('That option is not available'), nl, fail.
@@ -287,6 +287,9 @@ path(n,lab,rumahsakit).
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %% Movement Controller %%
+move(_) :-
+	story(0),
+	write('I should wrap my wound first using the bandage in my inventory!'),nl,!.
 
 move(A) :-
 	story(Z),
@@ -451,7 +454,7 @@ showobj(X) :-
 	readinputobj,!.
 
 showobj(X) :-
-	fixobj([],X),
+	fixObj([],X),
 	write('There\'s nothing here, it\'s full of nothingness'),nl,!.
 
 listobj([]).
@@ -476,12 +479,12 @@ selectFix(computer,nbhouse,_):-
 	!.
 
 selectFix(X,_,_) :-
-	items(List,_,X),
+	!,items(List,_,X),
 	listobjpas(List),
-	!.
+	fail,!.
 
-selectFix(_,_,[]) :-
-	write('There\'s nothing in there '),nl,fail.
+selectFix(X,_,_) :-
+	write('There\'s nothing in there '),nl.
 
 
 listobjfix([]).
@@ -936,11 +939,11 @@ help :-
 	write('          -- List of Commands --'),nl,
 	write('n,s,e,w - Move to the selected direction'),nl,
 	write('inventory - Opens the inventory'),nl,
-	write('object - To show active objects'),nl,
+	write('look - To show active objects'),nl,
 	write('talk - shows a list of npc to talk to'),nl,
 	write('describe - shows your current location and description of place'),nl,
 	write('examine - To examine objects'),nl,
-	write('help - shows this dialogue'),nl,
+	write('instructions - shows this dialogue'),nl,
 	write('stats - shows your current HP and Location'),nl,
 	write('quit - quits the game'),nl.
 
@@ -985,7 +988,7 @@ event(bandage) :-
 	C =:= 0,
 	write('You used the bandage to wrap your wounded foot.'),nl,
 	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl,
-	Y is 1, retractall(story), asserta(story(Y)).
+	Y is 1, retractall(story(_)), asserta(story(Y)).
 
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
@@ -1137,12 +1140,15 @@ saveStory(Pita) :-
 
 loadf(X) :-
 	%% facts to delete %%
-	retractall(items),
-	retractall(hp),
-	retractall(currloc),
-	retractall(itemcnt),
+	retractall(items(_,_,_)),
+	retractall(hp(_)),
+	retractall(currloc(_)),
+	retractall(itemcnt(_)),
+	retractall(sq(_)),
+	retractall(story(_)),
 	%% end of facts to delete %%
 	loadFile(X),nl,nl,nl,nl,
+	tag(line),
 	write('Previously on ROTZ:U'),nl,
 	currloc(Y),
 	describe(Y),nl.
