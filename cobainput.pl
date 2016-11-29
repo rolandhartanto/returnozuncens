@@ -6,12 +6,12 @@
 :- dynamic(sq1/1).
 :- dynamic(story/1).
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% GAME START CONTROLLER %%%%%%%%%
 start :-
 	init,
-	%currloc(X),%
 	scene(one),nl,
 	readinputgeneral.
 
@@ -145,6 +145,9 @@ menu(take(X)) :-
 menu(drop(X)) :-
 	drop(X), !,fail.
 
+menu(sleep):-
+	sleep, !,fail.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%  Move Actions  %%
@@ -153,7 +156,7 @@ menu(s) :- move(s), nl, !, fail.
 menu(e) :- move(e), nl, !, fail.
 menu(w) :- move(w), nl, !, fail.
 
-menu(quit) :- write(''),nl,!.
+menu(quit) :- true,!.
 menu(describe) :- currloc(X), describe(X), !, fail.
 menu(help) :- help, !, fail.
 menu(y) :- !.
@@ -254,6 +257,8 @@ path(n,lab,rumahsakit).
 
 %% Movement Controller %%
 move(A) :-
+	story(Z),
+	Z > 0,
 	currloc(X),
 	path(A,X,Y),
 	retractall(currloc),
@@ -265,7 +270,7 @@ move(A) :-
 	retract(hp(B)),
 	asserta(hp(C)),
 	write('HP : '), write(C),nl,
-	!, fail.
+	!.
 
 move(_) :-
 	write('You can\'t go that way!'),nl.
@@ -434,12 +439,12 @@ selectFix(computer,nbhouse,_):-
 	readans,
 	!.
 
-selectFix(X,Y,L) :-
+selectFix(X,_,_) :-
 	items(List,_,X),
 	listobjpas(List),
 	!.
 
-selectFix(X,_,[]) :-
+selectFix(_,_,[]) :-
 	write('There\'s nothing in there '),nl,fail.
 
 
@@ -456,7 +461,7 @@ listobjfix([Z|T]) :-
 %%%% PASSIVE OBJ LIST %%%%
 showobjpas(X) :-
 	/*write('Take :'),nl,*/
-	items(L2,V,X),
+	items(L2,_,X),
 	listobjpas(L2),
 	write('- Cancel'), nl.
 
@@ -472,6 +477,12 @@ listobjpas([Z|T]) :-
 find(X,Y) :-
 	items(L,_,Y),
 	ismember(X,L).
+
+take(_) :-
+	itemcnt(A),
+	A =:= 3,
+	write('Your inventory is full'),nl,
+	!.
 
 take(X) :-
 	find(X,Y),
@@ -493,18 +504,13 @@ take(X) :-
 	!.
 
 take(X) :-
-	itemcnt(A),
-	A =:= 3,
-	write('Your inventory is full'),nl,
-	!.
-
-take(X) :-
 	write('There\'s no '),write(X),write(' in this room!'),nl.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%% DROP ITEM %%%%
+
 drops(cancel,_) :- !.
-drops(X,_) :-
+drops(_,_) :-
 	itemcnt(A),
 	A =:= 0,
 	write('You don\'t have any item in your inventory!'),nl,
@@ -516,7 +522,7 @@ drops(X,rumah) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-
+	find(X,inventory),
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -746,29 +752,30 @@ scene(one_2) :-
 
 scene(two) :-
 	story(C),
-	C == 0,
+	C == 1,
 	write('I\'m not going to die like those miserable creature. I will cure my infection and survive this ordeal.'),nl,
 	write('So I think I should start looking right away. I will start by investigating my neighborhood.'),nl,nl,
 	write('You opened the door to the outside. A strong, unpleasant smell of burnt flesh filled your nose.'),nl,
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
 	write('the gate and pushed a body of a zombie to clear the way.'),nl.
-	story(X), Y is 2, retract(story(X)), asserta(story(Y)), !.
+	story(X), Y is 2, retract(story(X)), asserta(story(Y)).
 
 scene(three) :-
 	story(C),
-	C == 0,
+	C == 2,
 	write('You decided to check on your neighbor. You were not that close with him, but it would be nice to have a living companion.'),nl,
 	write('You pushed open the unlocked door. It was dark there. The only light sources are the light from the outside and the flickering'),nl,
 	write('light across the room. The light is from a turned on monitor. It is illuminating a familiar figure of your neighbor. Your'),nl,
-	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl.
-	story(X), Y is 3, retract(story(X)), asserta(story(Y)), !.
+	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl,
+	story(X), Y is 3, retract(story(X)), asserta(story(Y)).
 
 % Event Tag %
 event(bandage) :-
-	story(0),
+	story(C),
+	C == 0,
 	write('You used the bandage to wrap your wounded foot.'),nl,
 	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl.
-	story(X), Y is 1, retract(story(X)), asserta(story(Y)), !.
+	story(X), Y is 1, retract(story(X)), asserta(story(Y)).
 
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
@@ -888,7 +895,7 @@ saveItems(Pita) :-
 	nl(Pita),fail;true.
 
 
-saveSQ(Pita) :-
+saveItemCnt(Pita) :-
 	itemcnt(X),
 	write(Pita,'itemcnt('),
 	write(Pita,X),
@@ -898,6 +905,13 @@ saveSQ(Pita) :-
 saveSQ(Pita) :-
 	sq1(X),
 	write(Pita,'sq1('),
+	write(Pita,X),
+	write(Pita,').'),
+	nl(Pita).
+
+saveStory(Pita) :-
+	sq1(X),
+	write(Pita,'story('),
 	write(Pita,X),
 	write(Pita,').'),
 	nl(Pita).
@@ -928,6 +942,8 @@ save(X) :-
 	savePos(Pita),
 	saveHP(Pita),
 	saveItems(Pita),
+	saveItemCnt(Pita),
 	saveSQ(Pita),
+	saveScene(Pita),
 	%% add facts to write here %%
 	close(Pita).
