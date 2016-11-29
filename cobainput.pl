@@ -149,7 +149,19 @@ menu(talk) :-
 	shownpc(X),
 	!,fail.
 
-menu(object) :-
+menu(look) :-
+	currloc(tokosenjata),
+	story(A),
+	A<7,
+	write('I won\'t let you see my gun collection before you give me some softdrinks'),nl,
+	!,fail.
+menu(look) :-
+	currloc(tokosenjata),
+	story(A),
+	A>6,
+	showobj(tokosenjata),
+	!,fail.		
+menu(look) :-
 	currloc(X),
 	showobj(X),
 	!,fail.
@@ -189,7 +201,7 @@ menu(w) :- move(w), nl, !, fail.
 
 menu(quit) :- true,!.
 menu(describe) :- currloc(X), describe(X), !, fail.
-menu(help) :- help, !, fail.
+menu(instructions) :- help, !, fail.
 menu(y) :- !.
 menu(save) :- !.
 menu(_) :- write('That option is not available'), nl, fail.
@@ -289,10 +301,41 @@ path(n,lab,rumahsakit).
 
 %% Movement Controller %%
 
+move(_) :-
+	story(0),
+	write('I should wrap my wound first using the bandage in my inventory!'),nl,!.
+
+
 move(A) :-
 	story(Z),
-	Z =\= 0,
-	Z < 4,
+	Z > 5,
+	currloc(X),
+	path(A,X,Y),
+	retractall(currloc(_)),
+	asserta(currloc(Y)),
+	write('You\'re now at '), tag(Y),nl,
+	describe(Y),nl,
+	hp(B),
+	C is B - 5,
+	retract(hp(B)),
+	asserta(hp(C)),
+	write('HP : '), write(C),nl,
+	!.
+move(A) :-
+	story(Z),
+	Z > 0,
+	Z < 6,
+	currloc(jalanraya2),
+	hp(B),
+	C is 0,
+	retract(hp(B)),
+	asserta(hp(C)),
+	write('HP : '), write(C),nl,
+	!.
+move(A) :-
+	story(Z),
+	Z > 0,
+	Z < 6,
 	currloc(X),
 	path(A,X,Y),
 	retractall(currloc(_)),
@@ -487,13 +530,9 @@ selectFix(car,jalanraya1,_):-
 	!.
 
 selectFix(X,_,_) :-
-	items(List,_,X),
+	!,items(List,_,X),
 	listobjpas(List),
-	!.
-
-selectFix(_,_,[]) :-
-	write('There\'s nothing in there '),nl,fail.
-
+	fail,!.
 
 listobjfix([]).
 listobjfix([Z|T]) :-
@@ -541,7 +580,7 @@ take(X) :-
 	retract(items(L,V,Y)),
 	asserta(items(L2,V,Y)),
 	itemcnt(A),
-	A < 3, %max item (percobaan dulu angkanya nanti ganti lg) di inventory%
+	A < 10, %max item (percobaan dulu angkanya nanti ganti lg) di inventory%
 	B is A+1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
@@ -871,11 +910,6 @@ describe(nbhouse) :-
 	write('The air is reeking of his rotten flesh.'),nl,
 	write('To the west is the exit.'),nl.
 
-describe(nbhouse) :-
-	write('Your neighbor\'s house look messy.'),nl,
-	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
-	write('The air is reeking of his rotten flesh.'),nl,
-	write('To the west is the exit.'),nl.
 
 describe(jalanraya1) :-
 	write('You are at the main road.'),nl,
@@ -968,11 +1002,11 @@ help :-
 	write('          -- List of Commands --'),nl,
 	write('n,s,e,w - Move to the selected direction'),nl,
 	write('inventory - Opens the inventory'),nl,
-	write('object - To show active objects'),nl,
+	write('look - To show active objects'),nl,
 	write('talk - shows a list of npc to talk to'),nl,
 	write('describe - shows your current location and description of place'),nl,
 	write('examine - To examine objects'),nl,
-	write('help - shows this dialogue'),nl,
+	write('instructions - shows this dialogue'),nl,
 	write('stats - shows your current HP and Location'),nl,
 	write('quit - quits the game'),nl.
 
@@ -1035,8 +1069,20 @@ event(bandage) :-
 	C =:= 0,
 	write('You used the bandage to wrap your wounded foot.'),nl,
 	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl,
-	Y is 1, retractall(story), asserta(story(Y)).
+	Y is 1, retractall(story(_)), asserta(story(Y)).
 
+event(molotov) :-
+	story(C),
+	write('You killed all the zombie.'),nl,
+	write('You can go now... '),nl,hp(A),write('HP: '),write(A),nl,
+	Y is 6, retractall(story), asserta(story(Y)).
+
+event(softdrink) :-
+	story(C),
+	write('Ok, you can take everything you want ...'),nl,
+	write('The guns is in that gun cabinet.'),nl,
+	Y is 7, retractall(story), asserta(story(Y)).
+	
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
 
@@ -1187,12 +1233,15 @@ saveStory(Pita) :-
 
 loadf(X) :-
 	%% facts to delete %%
-	retractall(items),
-	retractall(hp),
-	retractall(currloc),
-	retractall(itemcnt),
+	retractall(items(_,_,_)),
+	retractall(hp(_)),
+	retractall(currloc(_)),
+	retractall(itemcnt(_)),
+	retractall(sq(_)),
+	retractall(story(_)),
 	%% end of facts to delete %%
 	loadFile(X),nl,nl,nl,nl,
+	tag(line),
 	write('Previously on ROTZ:U'),nl,
 	currloc(Y),
 	describe(Y),nl.
