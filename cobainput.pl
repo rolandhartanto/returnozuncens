@@ -131,6 +131,11 @@ menu(object) :-
 menu(use(X)) :-
 	use(X), !,fail.
 
+menu(take(X)) :- 
+	take(X), !,fail.
+
+menu(drop(X)) :-
+	drop(X), !,fail.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%  Move Actions  %%
@@ -454,33 +459,37 @@ listobjpas([Z|T]) :-
 	listobjpas(T).
 
 %%%% PASSIVE OBJ CONTROLLER %%%%
-take(cancel) :- !.
+find(X,Y) :-
+	items(L,_,Y),
+	ismember(X,L).
+
 take(X) :-
-	itemcnt(A),
-	A < 3, %max item (percobaan dulu angkanya nanti ganti lg) di inventory%
-	B is A+1,
-	retract(itemcnt(A)),
-	asserta(itemcnt(B)),
+	find(X,Y),
 	items(L,V,Y),
 	rmember(X,L,L2),
 	%printlist(L2),%
 	retract(items(L,V,Y)),
 	asserta(items(L2,V,Y)),
+	itemcnt(A),
+	A < 3, %max item (percobaan dulu angkanya nanti ganti lg) di inventory%
+	B is A+1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
 	retract(items(Li,V,inventory)),
 	asserta(items([X|Li],V,inventory)),
 
 	%%%dialogue(X) buat keterangan objek%%%
 	%%%tampilin pilihan buat ambil objek ke tangan atau disimpen balik atau ke inventory%%%
-	!,fail.
+	!.
 
 take(X) :-
 	itemcnt(A),
 	A =:= 3,
 	write('Your inventory is full'),nl,
-	!,fail.
+	!.
 
 take(X) :-
-	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
+	write('There\'s no '),write(X),write(' in this room!'),nl.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%% DROP ITEM %%%%
