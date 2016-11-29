@@ -757,7 +757,7 @@ scene(two) :-
 	write('So I think I should start looking right away. I will start by investigating my neighborhood.'),nl,nl,
 	write('You opened the door to the outside. A strong, unpleasant smell of burnt flesh filled your nose.'),nl,
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
-	write('the gate and pushed a body of a zombie to clear the way.'),nl.
+	write('the gate and pushed a body of a zombie to clear the way.'),nl,
 	story(X), Y is 2, retract(story(X)), asserta(story(Y)).
 
 scene(three) :-
