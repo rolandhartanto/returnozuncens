@@ -619,7 +619,7 @@ use(X) :-
 	E is D-1,
 	retract(itemcnt(D)),
 	asserta(itemcnt(E)),
-	event(X), !, fail.
+	event(X), !.
 
 use(_) :-
 	write('You don\'t have that item in your INVENTORY.'), !, fail.
@@ -759,6 +759,8 @@ scene(three) :-
 
 % Event Tag %
 event(bandage) :-
+	story(C),
+	C == 0,
 	write('You used the bandage to wrap your wounded foot.'),nl,
 	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl,
 	story(X), Y is 1, retract(story(X)), asserta(story(Y)).
