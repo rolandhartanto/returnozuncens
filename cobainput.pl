@@ -444,6 +444,9 @@ selectFix(computer,nbhouse,_):-
 	readans,
 	!.
 
+selectFix(car,jalanraya1,_):-
+
+
 selectFix(X,_,_) :-
 	items(List,_,X),
 	listobjpas(List),
@@ -553,7 +556,7 @@ drop(X) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-	
+
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -575,7 +578,7 @@ fixObj([sportstore,floor],mall).
 fixObj([guncabinets],tokosenjata).
 fixObj([machine],lab).
 
-*/	
+*/
 drop(X) :-
 	currloc(jalan1),
 	itemcnt(A),
