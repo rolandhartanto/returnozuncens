@@ -90,7 +90,7 @@ readinputusequestitem :-
 	repeat,
 	write('> Use > '),
 	read(Input),
-	use_qi(Input),
+	use(Input),
 	!.
 
 readinputdrop :- %READ INPUT TO DROP ITEM%
@@ -169,6 +169,7 @@ menuinvent(questitems) :-
     write('You have '),
     inventlist(questitems),
     write('in your quest items slot'),nl,
+		scene(one_2),
 		readinputusequestitem,
 		!.
 
@@ -264,7 +265,7 @@ move(A) :-
 	retract(hp(B)),
 	asserta(hp(C)),
 	write('HP : '), write(C),nl,
-	!.
+	!, fail.
 
 move(_) :-
 	write('You can\'t go that way!'),nl.
@@ -606,6 +607,8 @@ consumes(X) :-
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+use(cancel) :- !.
+
 use(X) :-
 	items(L,questitems,inventory),
 	rmember(X,L,L2),
@@ -735,28 +738,37 @@ scene(one) :-
 	write('then type \'questitems.\' to access QUEST ITEMS,'),nl,
 	write('I should make sure I didn\'t drop it.'),nl.
 
+scene(one_2) :-
+	story(C),
+	C == 0,
+	write('Great. It\'s still there.'),nl,
+	write('Type \'use(bandage)\' to use the BANDAGE.'),nl.
+
 scene(two) :-
-	story(1),
+	story(C),
+	C == 0,
 	write('I\'m not going to die like those miserable creature. I will cure my infection and survive this ordeal.'),nl,
 	write('So I think I should start looking right away. I will start by investigating my neighborhood.'),nl,nl,
 	write('You opened the door to the outside. A strong, unpleasant smell of burnt flesh filled your nose.'),nl,
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
 	write('the gate and pushed a body of a zombie to clear the way.'),nl.
-	story(X), Y is 2, retract(story(X)), asserta(story(Y)).
+	story(X), Y is 2, retract(story(X)), asserta(story(Y)), !.
 
 scene(three) :-
-	story(2),
+	story(C),
+	C == 0,
 	write('You decided to check on your neighbor. You were not that close with him, but it would be nice to have a living companion.'),nl,
 	write('You pushed open the unlocked door. It was dark there. The only light sources are the light from the outside and the flickering'),nl,
 	write('light across the room. The light is from a turned on monitor. It is illuminating a familiar figure of your neighbor. Your'),nl,
 	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl.
-	story(X), Y is 3, retract(story(X)), asserta(story(Y)).
+	story(X), Y is 3, retract(story(X)), asserta(story(Y)), !.
 
 % Event Tag %
 event(bandage) :-
+	story(0),
 	write('You used the bandage to wrap your wounded foot.'),nl,
 	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl.
-	story(X), Y is 1, retract(story(X)), asserta(story(Y)).
+	story(X), Y is 1, retract(story(X)), asserta(story(Y)), !.
 
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
