@@ -2,9 +2,7 @@
 :- dynamic(currloc/1).
 :- dynamic(items/3).
 :- dynamic(itemcnt/1). %jumlah item dalam inventory%
-:- dynamic(chapter/1).
 :- dynamic(hp/1).
-:- dynamic(npcd/2).
 :- dynamic(sq1/1).
 :- dynamic(story/1).
 
@@ -18,10 +16,10 @@ start :-
 	readinputgeneral.
 
 init :-
-	retractall(items(_,_)),								%% Retract all Dynamic Facts
-	retractall(currloc(_)),
-	retractall(itemcnt(_)),
-	retractall(hp(_)),
+	retractall(items),								%% Retract all Dynamic Facts
+	retractall(currloc),
+	retractall(itemcnt),
+	retractall(hp),
 	asserta(items([bandage],questitems,inventory)),				%% Initialize facts
 	asserta(items([chocolate,cottoncandy],consumables,table)),
 	asserta(items([apple],consumables,inventory)),
@@ -128,14 +126,25 @@ menu(object) :-
 	showobj(X),
 	!,fail.
 
+menu(save(X)) :-
+	save(X),
+	write('File Saved!'),nl,
+	!,fail.
+
+menu(load(X)) :-
+	write('File Loaded!'),nl,
+	loadf(X),
+	!,fail.
+
 menu(use(X)) :-
 	use(X), !,fail.
 
-menu(take(X)) :- 
+menu(take(X)) :-
 	take(X), !,fail.
 
 menu(drop(X)) :-
 	drop(X), !,fail.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%  Move Actions  %%
@@ -144,7 +153,7 @@ menu(s) :- move(s), nl, !, fail.
 menu(e) :- move(e), nl, !, fail.
 menu(w) :- move(w), nl, !, fail.
 
-menu(quit) :- !.
+menu(quit) :- write(''),nl,!.
 menu(describe) :- currloc(X), describe(X), !, fail.
 menu(help) :- help, !, fail.
 menu(y) :- !.
@@ -246,7 +255,7 @@ path(n,lab,rumahsakit).
 move(A) :-
 	currloc(X),
 	path(A,X,Y),
-	retractall(currloc(X)),
+	retractall(currloc),
 	asserta(currloc(Y)),
 	write('You\'re now at '), tag(Y),nl,
 	describe(Y),nl,
@@ -439,9 +448,9 @@ listobjfix([Z|T]) :-
 	listobjfix(T).
 %%%% PASSIVE OBJECT LOCATION %%%%
 /* rumah */
-objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,
+/*objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,
 		softdrink,bandage,molotov,baseballbat,syringes,mortarAndpestle,
-		bugspray,alcohol,water,lebarancookie,mangosten,zombiesblood,mistletoe]).
+		bugspray,alcohol,water,lebarancookie,mangosten,zombiesblood,mistletoe]).*/
 
 %%%% PASSIVE OBJ LIST %%%%
 showobjpas(X) :-
@@ -734,7 +743,7 @@ scene(two) :-
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
 	write('the gate and pushed a body of a zombie to clear the way.'),nl.
 	story(X), Y is 2, retract(story(X)), asserta(story(Y)).
-	
+
 scene(three) :-
 	story(2),
 	write('You decided to check on your neighbor. You were not that close with him, but it would be nice to have a living companion.'),nl,
@@ -742,7 +751,7 @@ scene(three) :-
 	write('light across the room. The light is from a turned on monitor. It is illuminating a familiar figure of your neighbor. Your'),nl,
 	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl.
 	story(X), Y is 3, retract(story(X)), asserta(story(Y)).
-	
+
 % Event Tag %
 event(bandage) :-
 	write('You used the bandage to wrap your wounded foot.'),nl,
@@ -833,13 +842,80 @@ tag(mistletoe) :- write('Mistletoe').
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+loadFile(X) :-
+    open(X,read,Pita),
+    repeat,
+    read(Pita,C),
+    asserta(C),
+    (at_end_of_stream(Pita)),
+    close(Pita).
 
-initFile(X) :-
-	open(X,write,Pita),
-	write('').
-
-savePos(X) :-
-	open(X,append,Pita),
-	currloc(X),
+savePos(Pita) :-
+	currloc(A),
 	write(Pita,'currloc('),
-	write(Pita,X),write(Pita,').').
+	write(Pita,A),
+	write(Pita,').'),
+	nl(Pita).
+
+saveHP(Pita) :-
+	hp(A),
+	write(Pita,'hp('),
+	write(Pita,A),
+	write(Pita,').'),
+	nl(Pita).
+
+saveItems(Pita) :-
+	items(L,X,Y),
+	write(Pita,'items('),
+	write(Pita,L),
+	write(Pita,','),
+	write(Pita,X),
+	write(Pita,','),
+	write(Pita,Y),
+	write(Pita,').'),
+	nl(Pita),fail;true.
+
+
+saveSQ(Pita) :-
+	itemcnt(X),
+	write(Pita,'itemcnt('),
+	write(Pita,X),
+	write(Pita,').'),
+	nl(Pita).
+
+saveSQ(Pita) :-
+	sq1(X),
+	write(Pita,'sq1('),
+	write(Pita,X),
+	write(Pita,').'),
+	nl(Pita).
+
+/*
+:- dynamic(currloc/1).
+:- dynamic(items/3).
+:- dynamic(itemcnt/1). %jumlah item dalam inventory%
+:- dynamic(hp/1).
+:- dynamic(sq1/1).
+*/
+
+loadf(X) :-
+	%% facts to delete %%
+	retractall(items),
+	retractall(hp),
+	retractall(currloc),
+	retractall(itemcnt),
+	%% end of facts to delete %%
+	loadFile(X),nl,nl,nl,nl,
+	write('Previously on ROTZ:U'),nl,
+	currloc(Y),
+	describe(Y),nl.
+
+save(X) :-
+	open(X,write,Pita),
+	%% add facts to write here %%
+	savePos(Pita),
+	saveHP(Pita),
+	saveItems(Pita),
+	saveSQ(Pita),
+	%% add facts to write here %%
+	close(Pita).
