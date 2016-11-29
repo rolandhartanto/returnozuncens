@@ -16,10 +16,10 @@ start :-
 	readinputgeneral.
 
 init :-
-	retractall(items),								%% Retract all Dynamic Facts
-	retractall(currloc),
-	retractall(itemcnt),
-	retractall(hp),
+	retractall(items(_)),								%% Retract all Dynamic Facts
+	retractall(currloc(_)),
+	retractall(itemcnt(_)),
+	retractall(hp(_)),
 	asserta(items([bandage],questitems,inventory)),				%% Initialize facts
 	asserta(items([chocolate,cottoncandy],consumables,table)),
 	asserta(items([apple],consumables,inventory)),
@@ -146,6 +146,9 @@ menu(take(X)) :-
 menu(drop(X)) :-
 	drop(X), !,fail.
 
+menu(stats) :-
+	stats.
+
 menu(sleep):-
 	sleep, !,fail.
 
@@ -263,7 +266,7 @@ move(A) :-
 	Z > 0,
 	currloc(X),
 	path(A,X,Y),
-	retractall(currloc),
+	retractall(currloc(_)),
 	asserta(currloc(Y)),
 	write('You\'re now at '), tag(Y),nl,
 	describe(Y),nl,
@@ -638,10 +641,7 @@ consumes(X) :-
 	rmember(X,L,L2),
 	retract(items(L,consumables,inventory)),
 	asserta(items(L2,consumables,inventory)),
-	hp(B),
-	C is B+5,
-	retract(hp(B)),
-	asserta(hp(C)),
+	hpadd(5),
 	itemcnt(D),
 	E is D-1,
 	retract(itemcnt(D)),
@@ -985,7 +985,7 @@ save(X) :-
 	saveItems(Pita),
 	saveItemCnt(Pita),
 	saveSQ(Pita),
-	saveScene(Pita),
+	saveStory(Pita),
 	%% add facts to write here %%
 	close(Pita).
 
@@ -1001,3 +1001,10 @@ hpadd(X) :-
 	retractall(hp),
 	Y+X >= 100 -> asserta(hp(100));
 	asserta(hp(Y+X)).
+
+stats :-
+	hp(X),
+	currloc(Y),
+	write(' -- STATUS -- '),nl,
+	write('HP : '),write(X),nl,
+	write('Location : '),tag(Y),nl,nl.
