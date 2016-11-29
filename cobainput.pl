@@ -566,9 +566,15 @@ ismember(X,[H|T]) :- X\==H, ismember(X,T).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+findtype(X,Y) :-
+	items(L,Y,_),
+	ismember(X,L).
+
 consumes(cancel):- !.
 
 consumes(X) :-
+	findtype(X,consumable),
+	find(X,inventory),
 	items(L,consumables,inventory),
 	rmember(X,L,L2),
 	retract(items(L,consumables,inventory)),
@@ -586,8 +592,6 @@ consumes(X) :-
 	!,fail.
 
 consumes(X) :-
-	items(X,Z,_),
-	Z\==consumables,
 	write('You cannot consume '), write(X),write(' !'),nl,
 	fail.
 
