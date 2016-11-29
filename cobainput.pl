@@ -165,7 +165,7 @@ menu(look) :-
 	story(A),
 	A>6,
 	showobj(tokosenjata),
-	!,fail.		
+	!,fail.
 menu(look) :-
 	dead(0),
 	currloc(X),
@@ -216,13 +216,13 @@ menu(quit) :- true,!.
 menu(describe) :- dead(0),currloc(X), describe(X), !, fail.
 menu(instructions) :- help, !, fail.
 menu(save) :- !.
-menu(_) :- 
+menu(_) :-
 	dead(0),
 	write('That option is not available'), nl, fail.
 menu(_) :-
 	dead(1),
 	write('You died!'),nl,fail.
-	
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% INVENTORY CONTROLLER %%%%%%%%%
@@ -917,7 +917,7 @@ describe(jalan1) :-
 	scene(two),nl,
 	write('There\'re a lot of dead zombies here.'),nl,nl,
 	write('To the (n)orth is your lovely house.'),nl,
-	write('To the (e)ast is your neighbor\'s house.'),nl
+	write('To the (e)ast is your neighbor\'s house.'),nl,
 	write('To the (s)outh is the main road.'),nl.
 
 describe(nbhouse) :-
@@ -948,11 +948,11 @@ describe(tamankota) :-
 	write('The City Park was green before. Now it is a deserted place.'),nl,
 	write('The only living things are some herbs and flower that once beautifully decorated the park...'),nl,
 	write('...and a little girl sitting on the bench. Her quiet but terrifiying cry sent a chill through your spine.'),nl,
-	write('(ghost) Be careful with your surrounding and don\'t easily trust anyone ....'),nl,nl
+	write('(ghost) Be careful with your surrounding and don\'t easily trust anyone ....'),nl,nl,
 	write('The suburbs is to the (n)orth.'),nl,
 	write('The police station is to the (w)est.'),nl,
 	write('The convenience store is to the (e)ast.'),nl,
-	write('The southern main road is to the (s)outh.'),nl
+	write('The southern main road is to the (s)outh.'),nl.
 
 describe(toko) :-
 	write('No one\'s there. No one would know if you take anything here.'),nl,
@@ -992,7 +992,7 @@ describe(jalanraya2) :-
 	write('To the (n)orth is the City Park.'),nl,
 	write('To the (e)ast is the drugstore.'),nl,
 	write('To the (w)est is the eastern road.'),nl,
-	write('To the (s)outh is the hospital.'),nl,
+	write('To the (s)outh is the hospital.'),nl.
 
 describe(jalanraya3) :-
 	write('You are at the eastern road.'),nl,
