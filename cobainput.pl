@@ -22,7 +22,7 @@ init :-
 	retractall(itemcnt(_)),
 	retractall(hp(_)),
 	asserta(items([bandage],questitems,inventory)),				%% Initialize facts
-	asserta(items([chocolate,strawberry],consumables,table)),
+	asserta(items([chocolate,cottoncandy],consumables,table)),
 	asserta(items([apple],consumables,inventory)),
 	asserta(items([],consumables,bloodyfloor)),
 	asserta(sq1(0)),
@@ -70,13 +70,6 @@ readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
 	write(' > '),
     read(Input),
     selectFix(Input,Y,L),
-    !.
-
-readinputobjpas(X) :- % READ INPUT TO SELECT OBJECT yg bisa dibawa%
-	repeat,
-    write('> '),tag(X),write(' > '),
-    read(Input),
-    take(Input),
     !.
 
 readans :- % READ INPUT TO ANSWER SIDE QUEST %
@@ -414,26 +407,19 @@ selectFix(computer,nbhouse,_):-
 	readans,
 	!.
 
+selectFix(X,Y,L) :-
+	items(List,_,X),
+	listobjpas(List),
+	!.
+
 selectFix(X,_,[]) :-
 	write('There\'s nothing in there '),nl,fail.
 
-selectFix(X,_,[X|_]) :-
-	%%%dialogue(X) buat keterangan objek%%%
-	%%%tampilin ada objek pasif apa aja di situ%%%
-	showobjpas(X),
-	!,fail.
 
-selectFix(X,Y,[_|T]) :-
-	selectFix(X,Y,T).
-
-listobjpas([]).
-listobjpas([Z|T]) :-
-		write('- '), tag(Z),write('('), write(Z), write(')'), nl,
-		listobjpas(T)
-
-selectActive(cancel) :- !.
-selectActive(X) :-
-	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
+listobjfix([]).
+listobjfix([Z|T]) :-
+	write('- '), tag(Z),write('('), write(Z), write(')'), nl,
+	listobjfix(T).
 
 
 %%%% PASSIVE OBJECT LOCATION %%%%
@@ -447,8 +433,8 @@ objects([chocolate,apple,milk,painkiller,juice,cottoncandy,coffee,tokemasnack,
 showobjpas(X) :-
 	items(L2,V,X),!,
 	listobjpas(L2),
-	write('- Cancel'), nl,
-	readinputobjpas(X).
+	write('- Cancel'), nl.
+
 
 showobjpas(X) :-
 	write('There\'s no such thing as that'),
