@@ -922,11 +922,20 @@ describe(tokoobat) :-
 	write('The drug cabinet was unlocked and filled with tools strange to you.'),nl.
 
 describe(jalanraya2) :-
+	story(C),
+	C == 5,
 	write('You arrived at the southern main road.'),nl,
 	write('You saw a person walking towards you. As he was getting closer, you realized it was not a person.'),nl,
 	write('It was a zombie. You were thinking to run away, but the thought vanished when you saw another zombie closing from the direction you came from.'),nl,
 	write('Another zombie closing from your left and more zombies from your right. You are surrounded.'),nl,
-	write('What will you do: flee or fight?'),nl.
+	write('What will you do: flee or fight?'),nl,
+	story(X), Y is 6, retract(story(X)), asserta(story(Y)),
+	!.
+
+describe(jalanraya2) :-
+	story(C),
+	C > 5,
+	write('You could see some of the zombies still burning. The nauseating smell of burnt flesh was filling the air.'),nl.
 
 describe(jalanraya3) :-
 	write('You are at the eastern road.'),nl,
@@ -939,12 +948,20 @@ describe(mall) :-
 	write('You realized there is someone who appeared to be busy searching for something. It seems that he didn\'t realize your presence.'),nl,
 	write('You are unsure whether he is still a human or not.'),nl.
 
-describe(rumahsakit) :- write('Hospital').
+describe(rumahsakit) :-
+	write('Dammit! What should I do?'),nl,nl,
+	write('Panicked, you quickly ran to the nearest room and tried to open the door. Locked.'),nl,
+	write('You tried the door next to it. Also locked. You tried the next doors, one by one.'),nl,
+	write('Until you finally arrived at an unlocked door labeled \'Laboratory\'. You got in.'),nl,
+	move(s).
+
 describe(tokosenjata) :-
 	write('It\'s the gun dealer. The owner is there.'),nl,
 	write('He is alive and kicking. He doesn\'t seem to be bothered by the situation.').
 
-describe(lab) :- write('Lab').
+describe(lab) :-
+	write('There was someone here.'),nl,nl,
+	dialogue(doctor).
 
 
 help :-
