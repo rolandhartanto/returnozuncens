@@ -78,7 +78,6 @@ readinputobj :- % READ INPUT TO SELECT ACTIVE OBJECT %
 	repeat,
     currloc(Y),
 	tag(Y),
-	fixObj(L,Y),
 	write(' > '),
     read(Input),
     selectFix(Input,Y,L),
@@ -163,7 +162,7 @@ menu(drop(X)) :-
 	drop(X), !,fail.
 
 menu(stats) :-
-	stats.
+	stats, !, fail.
 
 menu(sleep):-
 	sleep, !,fail.
@@ -777,6 +776,7 @@ consumes(X) :-
 	retract(items(L,consumables,inventory)),
 	asserta(items(L2,consumables,inventory)),
 	hpadd(5),
+	hp(C),
 	itemcnt(D),
 	E is D-1,
 	retract(itemcnt(D)),
