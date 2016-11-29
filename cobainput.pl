@@ -6,6 +6,7 @@
 :- dynamic(sq1/1).
 :- dynamic(story/1).
 
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%% GAME START CONTROLLER %%%%%%%%%
@@ -84,14 +85,14 @@ readinputconsume :- %READ INPUT TO CONSUME FOOD%
 	read(Input),
 	consumes(Input),
 	!.
-
+/*
 readinputusequestitem :-
 	repeat,
 	write('> Use > '),
 	read(Input),
 	use_qi(Input),
 	!.
-
+*/
 readinputdrop :- %READ INPUT TO DROP ITEM%
 	repeat,
 	write('> Drop > '),
@@ -171,8 +172,9 @@ menuinvent(questitems) :-
     write('You have '),
     inventlist(questitems),
     write('in your quest items slot'),nl,
+	/*
 		readinputusequestitem,
-		!.
+		*/!.
 
 menuinvent(consumables) :-
     write('You have '),
@@ -185,7 +187,7 @@ menuinvent(consume) :-
     write('in your consumables items slot'),nl,
 	readinputconsume,
 	!.
-
+/*
 menuinvent(drop) :-
 	write('You have '),
 	inventlist(questitems),
@@ -193,7 +195,7 @@ menuinvent(drop) :-
 	write('in your inventory'),nl,
 	readinputdrop,
 	!.
-
+*/
 menuinvent(cancel) :- !.
 
 menuinvent(_) :- write('That option is not available'), nl, fail.
@@ -255,6 +257,8 @@ path(n,lab,rumahsakit).
 
 %% Movement Controller %%
 move(A) :-
+	story(Z),
+	Z > 0,
 	currloc(X),
 	path(A,X,Y),
 	retractall(currloc),
@@ -504,6 +508,7 @@ take(X) :-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%% DROP ITEM %%%%
+
 drops(cancel,_) :- !.
 drops(_,_) :-
 	itemcnt(A),
@@ -517,7 +522,7 @@ drops(X,rumah) :-
 	B is A-1,
 	retract(itemcnt(A)),
 	asserta(itemcnt(B)),
-
+	find(X,inventory),
 	items(L,V,inventory),
 	rmember(X,L,L2),
 	retract(items(L,V,inventory)),
@@ -616,7 +621,7 @@ use(X) :-
 	E is D-1,
 	retract(itemcnt(D)),
 	asserta(itemcnt(E)),
-	event(X), !, fail.
+	event(X), !.
 
 use(_) :-
 	write('You don\'t have that item in your INVENTORY.'), !, fail.
@@ -736,6 +741,7 @@ scene(one) :-
 	write('then type \'questitems.\' to access QUEST ITEMS,'),nl,
 	write('I should make sure I didn\'t drop it.'),nl.
 
+
 scene(two) :-
 	story(1),
 	write('I\'m not going to die like those miserable creature. I will cure my infection and survive this ordeal.'),nl,
@@ -755,6 +761,8 @@ scene(three) :-
 
 % Event Tag %
 event(bandage) :-
+	story(C),
+	C == 0,
 	write('You used the bandage to wrap your wounded foot.'),nl,
 	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl,
 	story(X), Y is 1, retract(story(X)), asserta(story(Y)).
@@ -932,9 +940,10 @@ save(X) :-
 
 %% General Actions %%
 sleep :-
-	currloc(rumah),
+	currloc(rumah), hpadd(20), hp(X),
 	write('You closed your eyes for today, it\'s been a rough day'), nl,
-	hpadd(20); write('You can\'t sleep here, it\'s too dangerous to sleep here'), nl.
+	write('HP :'), nl,
+	 write(X); write('You can\'t sleep here, it\'s too dangerous to sleep here'), nl.
 
 hpadd(X) :-
 	hp(Y),
