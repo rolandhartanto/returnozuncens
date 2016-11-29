@@ -4,6 +4,7 @@
 :- dynamic(itemcnt/1). %jumlah item dalam inventory%
 :- dynamic(hp/1).
 :- dynamic(sq1/1).
+:- dynamic(story/1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -24,6 +25,7 @@ init :-
 	asserta(items([apple],consumables,inventory)),
 	asserta(items([],consumables,bloodyfloor)),
 	asserta(sq1(0)),
+	asserta(story(0)),
 	asserta(currloc(rumah)),
 	asserta(itemcnt(2)),
 	asserta(hp(100)),
@@ -134,6 +136,15 @@ menu(load(X)) :-
 	loadf(X),
 	!,fail.
 
+menu(use(X)) :-
+	use(X), !,fail.
+
+menu(take(X)) :-
+	take(X), !,fail.
+
+menu(drop(X)) :-
+	drop(X), !,fail.
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%  Move Actions  %%
@@ -180,7 +191,6 @@ menuinvent(drop) :-
 	write('in your inventory'),nl,
 	readinputdrop,
 	!.
-
 
 menuinvent(cancel) :- !.
 
@@ -318,7 +328,7 @@ dialogue(ghost) :-
 	write('Ghost : Ah! My assignment is finally done. Now I can meet my lecturer peacefully in the afterlife.'),nl,
 	write('Ghost : Thank you, my neighbor. Be careful with your surrounding and don\'t easily trust anyone.'),nl,
 	write('Ghost : <vanished into thin air>'),nl,
-	write('You   : (So, should I trust him or not?)').
+	write('You   : (So, should I trust him or not?)'),nl.
 
 dialogue(girl) :-
 	write('<crying in english>'),nl,
@@ -458,33 +468,37 @@ listobjpas([Z|T]) :-
 	listobjpas(T).
 
 %%%% PASSIVE OBJ CONTROLLER %%%%
-take(cancel) :- !.
+find(X,Y) :-
+	items(L,_,Y),
+	ismember(X,L).
+
 take(X) :-
-	itemcnt(A),
-	A < 3, %max item (percobaan dulu angkanya nanti ganti lg) di inventory%
-	B is A+1,
-	retract(itemcnt(A)),
-	asserta(itemcnt(B)),
+	find(X,Y),
 	items(L,V,Y),
 	rmember(X,L,L2),
 	%printlist(L2),%
 	retract(items(L,V,Y)),
 	asserta(items(L2,V,Y)),
+	itemcnt(A),
+	A < 3, %max item (percobaan dulu angkanya nanti ganti lg) di inventory%
+	B is A+1,
+	retract(itemcnt(A)),
+	asserta(itemcnt(B)),
 	retract(items(Li,V,inventory)),
 	asserta(items([X|Li],V,inventory)),
 
 	%%%dialogue(X) buat keterangan objek%%%
 	%%%tampilin pilihan buat ambil objek ke tangan atau disimpen balik atau ke inventory%%%
-	!,fail.
+	!.
 
 take(X) :-
 	itemcnt(A),
 	A =:= 3,
 	write('Your inventory is full'),nl,
-	!,fail.
+	!.
 
 take(X) :-
-	write('There\'s no '),write(X),write(' in this room!'),nl,fail.
+	write('There\'s no '),write(X),write(' in this room!'),nl.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%% DROP ITEM %%%%
@@ -561,9 +575,15 @@ ismember(X,[H|T]) :- X\==H, ismember(X,T).
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+findtype(X,Y) :-
+	items(L,Y,_),
+	ismember(X,L).
+
 consumes(cancel):- !.
 
 consumes(X) :-
+	findtype(X,consumable),
+	find(X,inventory),
 	items(L,consumables,inventory),
 	rmember(X,L,L2),
 	retract(items(L,consumables,inventory)),
@@ -581,15 +601,12 @@ consumes(X) :-
 	!,fail.
 
 consumes(X) :-
-	items(X,Z,_),
-	Z\==consumables,
 	write('You cannot consume '), write(X),write(' !'),nl,
 	fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-use_qi(cancel):- !.
 
-use_qi(X) :-
+use(X) :-
 	items(L,questitems,inventory),
 	rmember(X,L,L2),
 	retract(items(L,questitems,inventory)),
@@ -598,7 +615,10 @@ use_qi(X) :-
 	E is D-1,
 	retract(itemcnt(D)),
 	asserta(itemcnt(E)),
-	event(X).
+	event(X), !, fail.
+
+use(_) :-
+	write('You don\'t have that item in your INVENTORY.'), !, fail.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -609,13 +629,15 @@ describe(rumah) :-
 	write('The door is to the south'),nl.
 
 describe(jalan1) :-
+	scene(two),nl,
 	write('There\'re a lot of dead zombies here'),nl,
 	write('To the north is your lovely house'),nl,
 	write('To the east is your neighbor\'s house'),nl.
 
 describe(nbhouse) :-
+	scene(three),
 	write('Your neighbor\'s house look messy.'),nl,
-	write('You saw your dead neighbor if front of his still turned on computer, looking at your with his empty eye.'),nl,
+	write('You saw your dead neighbor in front of his still turned on computer, looking at you with his empty eye.'),nl,
 	write('The air is reeking of his rotten flesh.'),nl,
 	write('To the west is the exit.'),nl.
 
@@ -630,6 +652,7 @@ describe(tamankota) :-
 	write('The City Park was green before. Now it is a deserted place.'),nl,
 	write('The only living things are some herbs and flower that once beautifully decorated the park...'),nl,
 	write('...and a little girl sitting on the bench. Her quiet but terrifiying cry sent a chill through your spine.'),nl,
+	write('Maybe I should talk to her.'),nl,
 	write('The suburbs is to the north.'),nl,
 	write('The southern main road is to the south.'),nl,!.
 
@@ -702,32 +725,38 @@ scene(prologue) :-
 	write('I was running like it\'s the end of the world, which probably is, keeping my speed and paying no attention'),nl,
 	write('to my wounded foot. It seems that I still got some luck since I was able to reach my house, slammed the gate'),nl,
 	write('and turned on my electric fence. It will keep them off for some time, God knows how long. It\'s getting darker'),nl,
-	write('outside. I fell to floor in my living room, weak and powerless. My whole body was hurting all over and I'),nl,
+	write('outside. I fell to the floor in my living room, weak and powerless. My whole body was hurting all over and I'),nl,
 	write('realized how painful my wound was. Blood was pooling on the floor, soaked my carpet dark red. It was a miracle'),nl,
 	write('that I could be still alive after been infected for some time. '),nl,nl,nl, write('Rise of the Zombie [UNCENSORED]'),nl.
 
 scene(one) :-
 	write('For now, I should stop the bleeding. I remembered that I have a BANDAGE in my INVENTORY. I should use it.'),nl,
-	write('Type \'inventory.\' to open INVENTORY.'),nl.
+	write('Type \'inventory.\' to open INVENTORY,'),nl,
+	write('then type \'questitems.\' to access QUEST ITEMS,'),nl,
+	write('I should make sure I didn\'t drop it.'),nl.
 
 scene(two) :-
+	story(1),
 	write('I\'m not going to die like those miserable creature. I will cure my infection and survive this ordeal.'),nl,
 	write('So I think I should start looking right away. I will start by investigating my neighborhood.'),nl,nl,
 	write('You opened the door to the outside. A strong, unpleasant smell of burnt flesh filled your nose.'),nl,
 	write('The smell came from a number of burnt zombies that was trying to eat you few minutes ago. You opened'),nl,
 	write('the gate and pushed a body of a zombie to clear the way.'),nl.
+	story(X), Y is 2, retract(story(X)), asserta(story(Y)).
 
 scene(three) :-
+	story(2),
 	write('You decided to check on your neighbor. You were not that close with him, but it would be nice to have a living companion.'),nl,
 	write('You pushed open the unlocked door. It was dark there. The only light sources are the light from the outside and the flickering'),nl,
 	write('light across the room. The light is from a turned on monitor. It is illuminating a familiar figure of your neighbor. Your'),nl,
 	write('dead neighbor, to be exact. His flesh was rotten and his eyes was open, staring back into your eyes.'),nl.
+	story(X), Y is 3, retract(story(X)), asserta(story(Y)).
 
 % Event Tag %
 event(bandage) :-
 	write('You used the bandage to wrap your wounded foot.'),nl,
 	write('It should stop the bleeding for now.'),nl,hp(A),write('HP: '),write(A),nl.
-
+	story(X), Y is 1, retract(story(X)), asserta(story(Y)).
 
 %% Line Tag %%
 tag(line) :- write('___________________________________________').
