@@ -6,6 +6,7 @@
 :- dynamic(sq1/1).
 :- dynamic(story/1).
 :- dynamic(dead/1).
+:- dynamic(win/1).
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -51,6 +52,7 @@ init :-
 	asserta(items([],consumables,aspal)),
 	asserta(sq1(0)),
 	asserta(dead(0)),
+	asserta(win(0)),
 	asserta(story(0)),
 	asserta(currloc(rumah)),
 	asserta(itemcnt(2)),
@@ -203,7 +205,8 @@ menu(sleep):-
 
 menu(consume(X)):-
 	consumes(X), !,fail.
-
+menu(suicide):-
+	suicide, !,fail.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%  Move Actions  %%
@@ -352,6 +355,10 @@ move(A) :-
 	asserta(hp(C)),
 	scene(flee),
 	write('HP : '), write(C),nl,
+	dead(W),
+	V is 1,
+	retract(dead(W)),
+	asserta(dead(V)),
 	!.
 move(A) :-
 	story(Z),
@@ -472,7 +479,18 @@ dialogue(doctor) :-
 	write('You        : Whoa, whoa.. Lower that gun would you?'),nl,
 	write('You        : (Somehow this feels like deja vu)'),nl,
 	write('The Doctor : Oh, thank god. Another human.'),nl,
-	write('You        : I bring the ingredient to complete the cure.').
+	write('You        : I bring the ingredient to complete the cure.'),nl,checkrecipe;
+	write('You        : (He must be the doctor who is working on the cure)'),nl,
+	write('You        : Hey! Are you..'),nl,
+	write('The Doctor : <suddenly drew and raised his gun towards you>'),nl,
+	write('The Doctor : Wh.. Who are you?'),nl,
+	write('You        : Whoa, whoa.. Lower that gun would you?'),nl,
+	write('You        : (Somehow this feels like deja vu)'),nl,
+	write('The Doctor : Oh, thank god. Another human.'),nl,
+	write('You        : I bring the ingredient to complete the cure.'),nl,
+	write('The Doctor : Your ingredient is not complete!!'),nl,
+	write('The Doctor : And.... You\'re infected! Kill yourself or ... I\'ll do it myself'),nl.
+	
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -593,7 +611,7 @@ find(X,Y) :-
 
 take(_) :-
 	itemcnt(A),
-	A >= 3,
+	A >= 8,
 	write('Your inventory is full'),nl,
 	!.
 
@@ -882,7 +900,7 @@ consumes(X) :-
 	asserta(itemcnt(E)),
 	write('hmm... delicious'),nl,
 	write('HP : '),write(C),nl,
-	!,fail.
+	!.
 
 consumes(X) :-
 	write('You cannot consume '), write(X),write(' !'),nl,
@@ -975,15 +993,12 @@ describe(tokoobat) :-
 	write('The exit is to the (w)est'),nl.
 
 describe(jalanraya2) :-
-	story(C),
-	C =< 5,
 	write('You arrived at the southern main road.'),nl,
 	write('You saw a person walking towards you. As he was getting closer, you realized it was not a person.'),nl,
 	write('It was a zombie. You were thinking to run away, but the thought vanished when you saw another zombie closing from the direction you came from.'),nl,
 	write('Another zombie closing from your left and more zombies from your right. You are surrounded.'),nl,
-	write('What will you do: flee or fight?'),nl,
-	story(X), Y is 6, retract(story(X)), asserta(story(Y)),
-	!.
+	write('What will you do: flee or fight?'),nl.
+	
 
 describe(jalanraya2) :-
 	story(C),
@@ -1288,12 +1303,34 @@ save(X) :-
 	close(Pita).
 
 %% General Actions %%
+checkrecipe :-
+	item(L,questitems,inventory),
+	ismember(bugspray,L),
+	ismember(lebarancookie,L),
+	ismember(mangosten,L),
+	ismember(mistletoe,L),
+	ismember(alcohol,L),
+	ismember(shotgun,L),
+	ismember(aquadest,L),
+	ismember(zombiesblood,L),
+	write('The recipe is complete! Now you can make the cure!'),nl.
 sleep :-
 	currloc(rumah), hpadd(20), hp(X),
 	write('You closed your eyes for today, it\'s been a rough day'), nl,
 	write('HP :'), nl,
 	 write(X); write('You can\'t sleep here, it\'s too dangerous to sleep here'), nl.
-
+suicide :-
+	hp(X),
+	Y is 0,
+	retract(hp(X)),
+	asserta(hp(Y)),
+	dead(W),
+	Z is 1,
+	retract(dead(W)),
+	asserta(dead(Z)),
+	write('You feel that your burdens is too hard'),nl,
+	write('You smashed your head against the floor until you died'),nl,
+	write('GAME OVER'),nl.
 hpadd(X) :-
 	hp(Y),
 	retractall(hp),
